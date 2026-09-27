@@ -67,7 +67,7 @@
             // btnCancelar
             // 
             btnCancelar.Image = Properties.Resources.cancel_24px;
-            btnCancelar.Location = new Point(668, 397);
+            btnCancelar.Location = new Point(675, 538);
             btnCancelar.Name = "btnCancelar";
             btnCancelar.Size = new Size(75, 60);
             btnCancelar.TabIndex = 10;
@@ -78,7 +78,7 @@
             // btnOK
             // 
             btnOK.Image = Properties.Resources.ok_24px;
-            btnOK.Location = new Point(31, 397);
+            btnOK.Location = new Point(31, 538);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(75, 60);
             btnOK.TabIndex = 9;
@@ -119,13 +119,13 @@
             txtDescripcion.MaxLength = 300;
             txtDescripcion.Multiline = true;
             txtDescripcion.Name = "txtDescripcion";
-            txtDescripcion.Size = new Size(334, 98);
+            txtDescripcion.Size = new Size(334, 54);
             txtDescripcion.TabIndex = 8;
             // 
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(500, 33);
+            label4.Location = new Point(20, 461);
             label4.Name = "label4";
             label4.Size = new Size(43, 15);
             label4.TabIndex = 6;
@@ -133,7 +133,8 @@
             // 
             // txtPrecio
             // 
-            txtPrecio.Location = new Point(609, 28);
+            txtPrecio.Enabled = false;
+            txtPrecio.Location = new Point(129, 456);
             txtPrecio.MaxLength = 100;
             txtPrecio.Name = "txtPrecio";
             txtPrecio.Size = new Size(134, 23);
@@ -142,7 +143,7 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(500, 63);
+            label5.Location = new Point(31, 124);
             label5.Name = "label5";
             label5.Size = new Size(39, 15);
             label5.TabIndex = 6;
@@ -150,7 +151,7 @@
             // 
             // nudStock
             // 
-            nudStock.Location = new Point(609, 59);
+            nudStock.Location = new Point(140, 120);
             nudStock.Name = "nudStock";
             nudStock.Size = new Size(134, 23);
             nudStock.TabIndex = 12;
@@ -159,7 +160,7 @@
             // 
             chkActivo.AutoSize = true;
             chkActivo.CheckAlign = ContentAlignment.MiddleRight;
-            chkActivo.Location = new Point(683, 136);
+            chkActivo.Location = new Point(414, 124);
             chkActivo.Name = "chkActivo";
             chkActivo.Size = new Size(60, 19);
             chkActivo.TabIndex = 13;
@@ -169,7 +170,8 @@
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(500, 92);
+            label6.Enabled = false;
+            label6.Location = new Point(20, 431);
             label6.Name = "label6";
             label6.Size = new Size(98, 15);
             label6.TabIndex = 6;
@@ -177,7 +179,8 @@
             // 
             // nudCantidadBombones
             // 
-            nudCantidadBombones.Location = new Point(609, 88);
+            nudCantidadBombones.Enabled = false;
+            nudCantidadBombones.Location = new Point(129, 427);
             nudCantidadBombones.Name = "nudCantidadBombones";
             nudCantidadBombones.Size = new Size(134, 23);
             nudCantidadBombones.TabIndex = 12;
@@ -191,7 +194,7 @@
             panel1.Controls.Add(splitContainer1);
             panel1.Location = new Point(9, 166);
             panel1.Name = "panel1";
-            panel1.Size = new Size(773, 225);
+            panel1.Size = new Size(751, 225);
             panel1.TabIndex = 14;
             // 
             // splitContainer1
@@ -209,8 +212,8 @@
             splitContainer1.Panel2.Controls.Add(btnEditarBombon);
             splitContainer1.Panel2.Controls.Add(btnBorrarBombon);
             splitContainer1.Panel2.Controls.Add(btnAgregarBombon);
-            splitContainer1.Size = new Size(773, 225);
-            splitContainer1.SplitterDistance = 604;
+            splitContainer1.Size = new Size(751, 225);
+            splitContainer1.SplitterDistance = 574;
             splitContainer1.TabIndex = 0;
             // 
             // dgvDatos
@@ -223,7 +226,7 @@
             dgvDatos.Location = new Point(0, 0);
             dgvDatos.Name = "dgvDatos";
             dgvDatos.ReadOnly = true;
-            dgvDatos.Size = new Size(604, 225);
+            dgvDatos.Size = new Size(574, 225);
             dgvDatos.TabIndex = 0;
             // 
             // colId
@@ -285,7 +288,8 @@
             // 
             chkEsSurtida.AutoSize = true;
             chkEsSurtida.CheckAlign = ContentAlignment.MiddleRight;
-            chkEsSurtida.Location = new Point(500, 136);
+            chkEsSurtida.Enabled = false;
+            chkEsSurtida.Location = new Point(24, 496);
             chkEsSurtida.Name = "chkEsSurtida";
             chkEsSurtida.Size = new Size(82, 19);
             chkEsSurtida.TabIndex = 13;
@@ -296,7 +300,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(794, 479);
+            ClientSize = new Size(794, 640);
             Controls.Add(panel1);
             Controls.Add(chkEsSurtida);
             Controls.Add(chkActivo);
