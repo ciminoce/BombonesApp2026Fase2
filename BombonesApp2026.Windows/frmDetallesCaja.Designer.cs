@@ -1,6 +1,6 @@
 ﻿namespace BombonesApp2026.Windows
 {
-    partial class frmCajaAe
+    partial class frmDetallesCaja
     {
         /// <summary>
         /// Required designer variable.
@@ -30,7 +30,6 @@
         {
             components = new System.ComponentModel.Container();
             btnCancelar = new Button();
-            btnOK = new Button();
             txtNombreCaja = new TextBox();
             label2 = new Label();
             label3 = new Label();
@@ -38,53 +37,32 @@
             label4 = new Label();
             txtPrecio = new TextBox();
             label5 = new Label();
-            nudStock = new NumericUpDown();
             chkActivo = new CheckBox();
             label6 = new Label();
             errorProvider1 = new ErrorProvider(components);
             panel1 = new Panel();
-            splitContainer1 = new SplitContainer();
             dgvDatos = new DataGridView();
             colId = new DataGridViewTextBoxColumn();
             colBombon = new DataGridViewTextBoxColumn();
             colCantidad = new DataGridViewTextBoxColumn();
-            btnEditarBombon = new Button();
-            btnBorrarBombon = new Button();
-            btnAgregarBombon = new Button();
             chkEsSurtida = new CheckBox();
+            txtStock = new TextBox();
             txtCantidadBombones = new TextBox();
-            ((System.ComponentModel.ISupportInitialize)nudStock).BeginInit();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
-            splitContainer1.Panel1.SuspendLayout();
-            splitContainer1.Panel2.SuspendLayout();
-            splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvDatos).BeginInit();
             SuspendLayout();
             // 
             // btnCancelar
             // 
             btnCancelar.Image = Properties.Resources.cancel_24px;
-            btnCancelar.Location = new Point(675, 538);
+            btnCancelar.Location = new Point(449, 536);
             btnCancelar.Name = "btnCancelar";
             btnCancelar.Size = new Size(75, 60);
             btnCancelar.TabIndex = 10;
-            btnCancelar.Text = "Cancelar";
+            btnCancelar.Text = "Cerrar";
             btnCancelar.TextImageRelation = TextImageRelation.ImageAboveText;
             btnCancelar.UseVisualStyleBackColor = true;
-            // 
-            // btnOK
-            // 
-            btnOK.Image = Properties.Resources.ok_24px;
-            btnOK.Location = new Point(31, 538);
-            btnOK.Name = "btnOK";
-            btnOK.Size = new Size(75, 60);
-            btnOK.TabIndex = 9;
-            btnOK.Text = "OK";
-            btnOK.TextImageRelation = TextImageRelation.ImageAboveText;
-            btnOK.UseVisualStyleBackColor = true;
-            btnOK.Click += btnOK_Click;
             // 
             // txtNombreCaja
             // 
@@ -148,13 +126,6 @@
             label5.TabIndex = 6;
             label5.Text = "Stock:";
             // 
-            // nudStock
-            // 
-            nudStock.Location = new Point(140, 120);
-            nudStock.Name = "nudStock";
-            nudStock.Size = new Size(134, 23);
-            nudStock.TabIndex = 12;
-            // 
             // chkActivo
             // 
             chkActivo.AutoSize = true;
@@ -182,30 +153,11 @@
             // 
             // panel1
             // 
-            panel1.Controls.Add(splitContainer1);
+            panel1.Controls.Add(dgvDatos);
             panel1.Location = new Point(9, 166);
             panel1.Name = "panel1";
-            panel1.Size = new Size(751, 225);
+            panel1.Size = new Size(527, 225);
             panel1.TabIndex = 14;
-            // 
-            // splitContainer1
-            // 
-            splitContainer1.Dock = DockStyle.Fill;
-            splitContainer1.Location = new Point(0, 0);
-            splitContainer1.Name = "splitContainer1";
-            // 
-            // splitContainer1.Panel1
-            // 
-            splitContainer1.Panel1.Controls.Add(dgvDatos);
-            // 
-            // splitContainer1.Panel2
-            // 
-            splitContainer1.Panel2.Controls.Add(btnEditarBombon);
-            splitContainer1.Panel2.Controls.Add(btnBorrarBombon);
-            splitContainer1.Panel2.Controls.Add(btnAgregarBombon);
-            splitContainer1.Size = new Size(751, 225);
-            splitContainer1.SplitterDistance = 574;
-            splitContainer1.TabIndex = 0;
             // 
             // dgvDatos
             // 
@@ -217,8 +169,8 @@
             dgvDatos.Location = new Point(0, 0);
             dgvDatos.Name = "dgvDatos";
             dgvDatos.ReadOnly = true;
-            dgvDatos.Size = new Size(574, 225);
-            dgvDatos.TabIndex = 0;
+            dgvDatos.Size = new Size(527, 225);
+            dgvDatos.TabIndex = 1;
             // 
             // colId
             // 
@@ -242,39 +194,6 @@
             colCantidad.ReadOnly = true;
             colCantidad.Width = 80;
             // 
-            // btnEditarBombon
-            // 
-            btnEditarBombon.Image = Properties.Resources.edit_property_24px;
-            btnEditarBombon.Location = new Point(14, 145);
-            btnEditarBombon.Name = "btnEditarBombon";
-            btnEditarBombon.Size = new Size(134, 60);
-            btnEditarBombon.TabIndex = 9;
-            btnEditarBombon.Text = "Editar Bombón";
-            btnEditarBombon.TextImageRelation = TextImageRelation.ImageAboveText;
-            btnEditarBombon.UseVisualStyleBackColor = true;
-            // 
-            // btnBorrarBombon
-            // 
-            btnBorrarBombon.Image = Properties.Resources.cancel_24px;
-            btnBorrarBombon.Location = new Point(14, 79);
-            btnBorrarBombon.Name = "btnBorrarBombon";
-            btnBorrarBombon.Size = new Size(134, 60);
-            btnBorrarBombon.TabIndex = 9;
-            btnBorrarBombon.Text = "Borrar Bombón";
-            btnBorrarBombon.TextImageRelation = TextImageRelation.ImageAboveText;
-            btnBorrarBombon.UseVisualStyleBackColor = true;
-            // 
-            // btnAgregarBombon
-            // 
-            btnAgregarBombon.Image = Properties.Resources.ok_24px;
-            btnAgregarBombon.Location = new Point(14, 13);
-            btnAgregarBombon.Name = "btnAgregarBombon";
-            btnAgregarBombon.Size = new Size(134, 60);
-            btnAgregarBombon.TabIndex = 9;
-            btnAgregarBombon.Text = "Agregar Bombón";
-            btnAgregarBombon.TextImageRelation = TextImageRelation.ImageAboveText;
-            btnAgregarBombon.UseVisualStyleBackColor = true;
-            // 
             // chkEsSurtida
             // 
             chkEsSurtida.AutoSize = true;
@@ -287,6 +206,14 @@
             chkEsSurtida.Text = "Es Surtida?";
             chkEsSurtida.UseVisualStyleBackColor = true;
             // 
+            // txtStock
+            // 
+            txtStock.Location = new Point(140, 120);
+            txtStock.MaxLength = 100;
+            txtStock.Name = "txtStock";
+            txtStock.Size = new Size(79, 23);
+            txtStock.TabIndex = 8;
+            // 
             // txtCantidadBombones
             // 
             txtCantidadBombones.Enabled = false;
@@ -296,17 +223,15 @@
             txtCantidadBombones.Size = new Size(134, 23);
             txtCantidadBombones.TabIndex = 8;
             // 
-            // frmCajaAe
+            // frmDetallesCaja
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(794, 640);
+            ClientSize = new Size(572, 640);
             Controls.Add(panel1);
             Controls.Add(chkEsSurtida);
             Controls.Add(chkActivo);
-            Controls.Add(nudStock);
             Controls.Add(btnCancelar);
-            Controls.Add(btnOK);
             Controls.Add(txtDescripcion);
             Controls.Add(label6);
             Controls.Add(label3);
@@ -314,17 +239,13 @@
             Controls.Add(txtCantidadBombones);
             Controls.Add(txtPrecio);
             Controls.Add(label4);
+            Controls.Add(txtStock);
             Controls.Add(txtNombreCaja);
             Controls.Add(label2);
-            Name = "frmCajaAe";
-            Text = "frmBombonAe";
-            ((System.ComponentModel.ISupportInitialize)nudStock).EndInit();
+            Name = "frmDetallesCaja";
+            Text = "frmDetallesCaja";
             ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
             panel1.ResumeLayout(false);
-            splitContainer1.Panel1.ResumeLayout(false);
-            splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
-            splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvDatos).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -334,7 +255,6 @@
 
         private ComboBox cboTipoBombon;
         private Button btnCancelar;
-        private Button btnOK;
         private TextBox txtNombreCaja;
         private Label label2;
         private Label label1;
@@ -343,21 +263,17 @@
         private Label label4;
         private TextBox txtPrecio;
         private Label label5;
-        private NumericUpDown nudStock;
         private CheckBox chkTieneAzucar;
         private CheckBox chkActivo;
         private Label label6;
         private ErrorProvider errorProvider1;
         private Panel panel1;
-        private SplitContainer splitContainer1;
+        private CheckBox chkEsSurtida;
         private DataGridView dgvDatos;
         private DataGridViewTextBoxColumn colId;
         private DataGridViewTextBoxColumn colBombon;
         private DataGridViewTextBoxColumn colCantidad;
-        private Button btnBorrarBombon;
-        private Button btnAgregarBombon;
-        private Button btnEditarBombon;
-        private CheckBox chkEsSurtida;
         private TextBox txtCantidadBombones;
+        private TextBox txtStock;
     }
 }
