@@ -8,6 +8,7 @@ namespace BombonesApp2026.Servicios.Interfaces
         int Agregar(CajaCreateDto cajaCreateDto);
         void Borrar(int productoId);
         void Editar(CajaEditDto cajaEditDto);
+        CajaDetailDto? ObtenerCajaConDetalles(int productoId);
         ResultadoPaginacionDto<CajaListDto> ObtenerPagina(int paginaActual, int cantidadPorPagina, bool? filtroActivo = null, string? textoBuscar = null);
         int ObtenerPaginaRegistro(string nombre, int cantidadPorPagina, bool? filtroActivo, string? textoBuscar);
         CajaEditDto? ObtenerParaEditar(int productoId);

@@ -126,5 +126,19 @@ namespace CajaesApp2026.Servicios.Servicios
             }
         }
 
+        public CajaDetailDto? ObtenerCajaConDetalles(int productoId)
+        {
+            if (productoId <= 0)
+            {
+                throw new ArgumentException(nameof(productoId),
+                    "El ID debe ser positivo");
+            }
+            var caja = _cajaRepositorio.ObtenerPorId(productoId);
+            if (caja is null)
+            {
+                throw new KeyNotFoundException($"No se encontró una caja con el ID {productoId}");
+            }
+            return caja.ToDetailDto();
+        }
     }
 }

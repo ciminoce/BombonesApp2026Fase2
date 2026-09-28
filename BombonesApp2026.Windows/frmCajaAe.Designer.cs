@@ -280,7 +280,7 @@
             chkEsSurtida.AutoSize = true;
             chkEsSurtida.CheckAlign = ContentAlignment.MiddleRight;
             chkEsSurtida.Enabled = false;
-            chkEsSurtida.Location = new Point(24, 496);
+            chkEsSurtida.Location = new Point(21, 494);
             chkEsSurtida.Name = "chkEsSurtida";
             chkEsSurtida.Size = new Size(82, 19);
             chkEsSurtida.TabIndex = 13;

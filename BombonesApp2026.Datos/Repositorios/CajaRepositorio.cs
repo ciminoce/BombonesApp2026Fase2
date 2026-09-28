@@ -21,6 +21,8 @@ namespace CajaesApp2026.Datos.Repositorios
         {
             IQueryable<Caja> query = _context
                 .Cajas
+                .Include(c=>c.Detalles)
+                .ThenInclude(d=>d.Bombon)
                 .AsNoTracking();
             if (!string.IsNullOrWhiteSpace(textoBuscar))
             {
@@ -70,6 +72,8 @@ namespace CajaesApp2026.Datos.Repositorios
         public Caja? ObtenerPorId(int ProductoId)
         {
             return _context.Cajas
+                .Include(c=>c.Detalles)
+                .ThenInclude(d=>d.Bombon)
                 .FirstOrDefault(b => b.ProductoId == ProductoId);
         }
 
@@ -80,11 +84,8 @@ namespace CajaesApp2026.Datos.Repositorios
             if (cajaEnDb is null) throw new Exception("Caja no encontrado");
             cajaEnDb.Nombre = caja.Nombre;
             cajaEnDb.Descripcion = caja.Descripcion;
-            cajaEnDb.Precio = caja.Precio;
             cajaEnDb.Stock = caja.Stock;
             cajaEnDb.Activo = caja.Activo;
-            cajaEnDb.EsSurtida = caja.EsSurtida;
-            cajaEnDb.CantidadBombones = caja.CantidadBombones;
 
 
             _context.SaveChanges();

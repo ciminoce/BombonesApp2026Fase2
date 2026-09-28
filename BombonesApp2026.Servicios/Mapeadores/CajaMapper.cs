@@ -1,5 +1,6 @@
 ﻿using BombonesApp2026.Entidades.Entidades;
 using BombonesApp2026.Servicios.DTOs.Caja;
+using BombonesApp2026.Servicios.DTOs.DetalleCaja;
 
 namespace BombonesApp2026.Servicios.Mapeadores
 {
@@ -37,9 +38,6 @@ namespace BombonesApp2026.Servicios.Mapeadores
                 Nombre = cajaDto.Nombre,
                 Descripcion=cajaDto.Descripcion,
                 Stock = cajaDto.Stock,
-                Precio = cajaDto.Precio,
-                CantidadBombones = cajaDto.CantidadBombones,
-                EsSurtida = cajaDto.EsSurtida,
 
             };
         }
@@ -51,9 +49,6 @@ namespace BombonesApp2026.Servicios.Mapeadores
                 Nombre = cajaDto.Nombre,
                 Descripcion = cajaDto.Descripcion,
                 Stock = cajaDto.Stock,
-                Precio = cajaDto.Precio,
-                CantidadBombones = cajaDto.CantidadBombones,
-                EsSurtida = cajaDto.EsSurtida,
                 Activo=cajaDto.Activo
             };
         }
@@ -69,6 +64,21 @@ namespace BombonesApp2026.Servicios.Mapeadores
                 CantidadBombones = caja.CantidadBombones,
                 EsSurtida = caja.EsSurtida,
                 Activo = caja.Activo
+            };
+        }
+        public static CajaDetailDto ToDetailDto(this Caja caja)
+        {
+            return new CajaDetailDto
+            {
+                ProductoId = caja.ProductoId,
+                Nombre = caja.Nombre,
+                Descripcion = caja.Descripcion,
+                Stock = caja.Stock,
+                Precio = caja.Precio,
+                CantidadBombones = caja.CantidadBombones,
+                EsSurtida = caja.EsSurtida,
+                Activo = caja.Activo,
+                Detalles=caja.Detalles.Select(d=>d.ToListDto()).ToList()??new List<DetalleCajaListDto>()
             };
         }
     }

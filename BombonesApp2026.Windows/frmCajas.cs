@@ -292,5 +292,25 @@ namespace BombonesApp2026.Windows
 
         }
 
+        private void tsbDetalle_Click(object sender, EventArgs e)
+        {
+            if (_bindingSource.Current == null)
+            {
+                MessageBox.Show("Debe seleccionar una fila de la grilla",
+                    "Advertencia",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            CajaListDto cajaDto = (CajaListDto)_bindingSource.Current!;
+            CajaDetailDto? cajaDetailDto = _cajaServicio.ObtenerCajaConDetalles(cajaDto.ProductoId);
+            if (cajaDetailDto is null) return;
+            using (frmDetallesCaja frm=new frmDetallesCaja() { Text="Detalle de Caja"})
+            {
+                frm.SetCaja(cajaDetailDto);
+                frm.ShowDialog();
+            }
+        }
     }
 }

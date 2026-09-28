@@ -63,9 +63,11 @@
             btnCancelar.Text = "Cerrar";
             btnCancelar.TextImageRelation = TextImageRelation.ImageAboveText;
             btnCancelar.UseVisualStyleBackColor = true;
+            btnCancelar.Click += btnCancelar_Click;
             // 
             // txtNombreCaja
             // 
+            txtNombreCaja.Enabled = false;
             txtNombreCaja.Location = new Point(140, 28);
             txtNombreCaja.MaxLength = 100;
             txtNombreCaja.Name = "txtNombreCaja";
@@ -92,6 +94,7 @@
             // 
             // txtDescripcion
             // 
+            txtDescripcion.Enabled = false;
             txtDescripcion.Location = new Point(140, 57);
             txtDescripcion.MaxLength = 300;
             txtDescripcion.Multiline = true;
@@ -130,6 +133,7 @@
             // 
             chkActivo.AutoSize = true;
             chkActivo.CheckAlign = ContentAlignment.MiddleRight;
+            chkActivo.Enabled = false;
             chkActivo.Location = new Point(414, 124);
             chkActivo.Name = "chkActivo";
             chkActivo.Size = new Size(60, 19);
@@ -140,7 +144,6 @@
             // label6
             // 
             label6.AutoSize = true;
-            label6.Enabled = false;
             label6.Location = new Point(20, 431);
             label6.Name = "label6";
             label6.Size = new Size(98, 15);
@@ -174,6 +177,7 @@
             // 
             // colId
             // 
+            colId.DataPropertyName = "BombonId";
             colId.HeaderText = "Id";
             colId.Name = "colId";
             colId.ReadOnly = true;
@@ -182,6 +186,7 @@
             // colBombon
             // 
             colBombon.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            colBombon.DataPropertyName = "NombreBombon";
             colBombon.HeaderText = "Bombón";
             colBombon.Name = "colBombon";
             colBombon.ReadOnly = true;
@@ -189,6 +194,7 @@
             // colCantidad
             // 
             colCantidad.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colCantidad.DataPropertyName = "Cantidad";
             colCantidad.HeaderText = "Cantidad";
             colCantidad.Name = "colCantidad";
             colCantidad.ReadOnly = true;
@@ -208,6 +214,7 @@
             // 
             // txtStock
             // 
+            txtStock.Enabled = false;
             txtStock.Location = new Point(140, 120);
             txtStock.MaxLength = 100;
             txtStock.Name = "txtStock";
@@ -270,10 +277,10 @@
         private Panel panel1;
         private CheckBox chkEsSurtida;
         private DataGridView dgvDatos;
+        private TextBox txtCantidadBombones;
+        private TextBox txtStock;
         private DataGridViewTextBoxColumn colId;
         private DataGridViewTextBoxColumn colBombon;
         private DataGridViewTextBoxColumn colCantidad;
-        private TextBox txtCantidadBombones;
-        private TextBox txtStock;
     }
 }

@@ -31,7 +31,6 @@ namespace BombonesApp2026.Windows
                 _cajaDto.Nombre = txtNombreCaja.Text;
                 _cajaDto.Descripcion = txtDescripcion.Text;
                 _cajaDto.Stock = (int)nudStock.Value;
-                _cajaDto.CantidadBombones = (int)nudCantidadBombones.Value;
                 _cajaDto.Precio = decimal.Parse(txtPrecio.Text);
                 _cajaDto.EsSurtida = chkEsSurtida.Checked;
                 _cajaDto.Activo = chkActivo.Checked;

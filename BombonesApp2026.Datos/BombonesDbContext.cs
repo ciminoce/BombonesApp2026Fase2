@@ -1,12 +1,10 @@
 ﻿using BombonesApp2026.Datos.EntityTypeConfigurations;
 using BombonesApp2026.Entidades.Entidades;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 namespace BombonesApp2026.Datos
 {
-    public class BombonesDbContext:DbContext
+    public class BombonesDbContext : DbContext
     {
         public DbSet<Rol> Roles { get; set; }
         public DbSet<TipoBombon> TipoBombones { get; set; }
@@ -18,6 +16,7 @@ namespace BombonesApp2026.Datos
         public DbSet<Bombon> Bombones { get; set; }
         public DbSet<Caja> Cajas { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
+        public DbSet<DetalleCaja> DetalleCajas { get; set; }
         public BombonesDbContext(
             DbContextOptions<BombonesDbContext> options)
             : base(options)

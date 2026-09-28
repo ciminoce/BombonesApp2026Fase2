@@ -20,17 +20,18 @@ namespace BombonesApp2026.Servicios.Mapeadores
         }
         public static Bombon ToEntidad(this BombonCreateDto bombonDto)
         {
-            return new Bombon
+            Bombon b= new Bombon
             {
                 Nombre = bombonDto.Nombre,
                 Descripcion = bombonDto.Descripcion,
-                Precio = bombonDto.Precio,
                 Stock = bombonDto.Stock,
                 Activo = bombonDto.Activo,
                 TieneAzucar = bombonDto.TieneAzucar,
                 PesoEnGramos = bombonDto.PesoEnGramos,
                 TipoBombonId = bombonDto.TipoBombonId
             };
+            b.CambiarPrecio(bombonDto.Precio);
+            return b;
         }
         public static BombonEditDto ToEditDto(this Bombon bombon)
         {
@@ -50,18 +51,19 @@ namespace BombonesApp2026.Servicios.Mapeadores
         }
         public static Bombon ToEntidad(this BombonEditDto bombonDto)
         {
-            return new Bombon
+            Bombon b= new Bombon
             {
                 ProductoId = bombonDto.ProductoId,
                 Nombre = bombonDto.Nombre,
                 Descripcion = bombonDto.Descripcion,
-                Precio = bombonDto.Precio,
                 Stock = bombonDto.Stock,
                 Activo = bombonDto.Activo,
                 TieneAzucar = bombonDto.TieneAzucar,
                 PesoEnGramos = bombonDto.PesoEnGramos,
                 TipoBombonId = bombonDto.TipoBombonId
             };
+            b.CambiarPrecio(bombonDto.Precio);
+            return b;
         }
 
         public static BombonCreateDto ToCreateDto(this BombonEditDto bombonDto)

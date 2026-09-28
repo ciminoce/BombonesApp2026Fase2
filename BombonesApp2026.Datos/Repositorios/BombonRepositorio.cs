@@ -84,12 +84,11 @@ namespace BombonesApp2026.Datos.Repositorios
             bombonEnDb.Nombre = bombon.Nombre;
             bombonEnDb.TipoBombonId = bombon.TipoBombonId;
             bombonEnDb.Descripcion = bombon.Descripcion;
-            bombonEnDb.Precio = bombon.Precio;
             bombonEnDb.Stock = bombon.Stock;
             bombonEnDb.Activo = bombon.Activo;
             bombonEnDb.TieneAzucar = bombon.TieneAzucar;
             bombonEnDb.PesoEnGramos = bombon.PesoEnGramos;
-
+            bombonEnDb.CambiarPrecio(bombon.Precio);
 
             _context.SaveChanges();
 

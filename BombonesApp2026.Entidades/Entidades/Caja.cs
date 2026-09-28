@@ -3,29 +3,32 @@
     public class Caja : Producto
     {
 
-        public bool EsSurtida { get; set; }
-        private int _cantidadBombones;
+        public bool EsSurtida { get { return Detalles.Count > 1; } }
 
         public int CantidadBombones
         {
-            get { return _cantidadBombones; }
-            set
-            {
-                if (value <= 0) throw new ArgumentOutOfRangeException("La cantidad de bombones debe ser un valor positivo.");
+            get { return Detalles.Sum(d => d.Cantidad); }
+        }
+        public ICollection<DetalleCaja> Detalles { get; set; } = new List<DetalleCaja>();
 
-                _cantidadBombones = value;
+        public override decimal Precio
+        {
+            get
+            {
+                decimal subTotal = Detalles.Sum(d => d.Subtotal);
+                decimal recargoEmpaquetado = subTotal * 1.20M;
+                return Math.Ceiling(recargoEmpaquetado / 100) * 100;
             }
         }
+
         public Caja() : base()
         {
 
         }
-        public Caja(string nombre, decimal precio, int stock, int cantidadBombones,
-            bool esSurtida = true, bool activo = true, string? descripcion = null)
-            : base(nombre, precio, stock, activo, descripcion)
+        public Caja(string nombre, int stock,
+             bool activo = true, string? descripcion = null)
+            : base(nombre, stock, activo, descripcion)
         {
-            CantidadBombones = cantidadBombones;
-            EsSurtida = esSurtida;
         }
         public override string MostrarDatos()
         {

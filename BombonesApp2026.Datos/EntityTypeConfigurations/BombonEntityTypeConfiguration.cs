@@ -11,9 +11,13 @@ namespace BombonesApp2026.Datos.EntityTypeConfigurations
             builder.ToTable("Bombones");
             builder.Property(b => b.TipoBombonId).IsRequired();
             builder.Property(b => b.TieneAzucar).IsRequired();
-            builder.Property(b=>b.PesoEnGramos)
-                .IsRequired()
-                .HasColumnName("PesoGramos");
+            builder.Property(b => b.PesoEnGramos)
+                .IsRequired();
+
+            builder.Property<decimal>("_precio")
+                .HasColumnName("Precio")
+                .HasPrecision(18,2)
+                .IsRequired();
 
             builder.HasOne(b => b.TipoBombon)
                 .WithMany(t=>t.Bombones)//Joder me faltó esto

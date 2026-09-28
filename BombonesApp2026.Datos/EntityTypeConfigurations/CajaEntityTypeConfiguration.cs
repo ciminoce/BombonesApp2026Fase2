@@ -9,8 +9,14 @@ namespace BombonesApp2026.Datos.EntityTypeConfigurations
         public void Configure(EntityTypeBuilder<Caja> builder)
         {
             builder.ToTable("Cajas");
-            builder.Property(c=>c.CantidadBombones).IsRequired();
-            builder.Property(c=>c.EsSurtida).IsRequired();
+            builder.Ignore(c=>c.CantidadBombones);
+            builder.Ignore(c => c.EsSurtida);
+            builder.Ignore(c => c.Precio);
+
+            builder.HasMany(c => c.Detalles)
+                .WithOne(d => d.Caja)
+                .HasForeignKey(d => d.CajaId)
+                .OnDelete(DeleteBehavior.Cascade);
 
         }
     }

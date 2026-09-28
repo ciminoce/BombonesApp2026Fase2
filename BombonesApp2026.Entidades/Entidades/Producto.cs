@@ -48,17 +48,6 @@
             }
         }
 
-        public decimal Precio
-        {
-            get => _precio;
-            set
-            {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(Precio), "El precio no puede ser negativo.");
-                _precio = value;
-            }
-        }
-
         public int Stock
         {
             get => _stock;
@@ -78,16 +67,15 @@
         {
         }
 
-        public Producto(string nombre, decimal precio, int stock, bool activo = true, string? descripcion = null)
+        public Producto(string nombre, int stock, bool activo = true, string? descripcion = null)
         {
             // Asignamos a través de las propiedades para disparar sus validaciones
             Nombre = nombre;
-            Precio = precio;
             Stock = stock;
             Activo = activo;
             Descripcion = descripcion;
         }
-
+        public abstract decimal Precio { get; }
         // Método abstracto a implementar por las clases derivadas
         public abstract string MostrarDatos();
     }
