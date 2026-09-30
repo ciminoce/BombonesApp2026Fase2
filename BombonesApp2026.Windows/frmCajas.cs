@@ -1,9 +1,6 @@
 ﻿using Bombones2026.Servicios.DTOs.Paginacion;
-using BombonesApp2026.Servicios.DTOs.Bombon;
 using BombonesApp2026.Servicios.DTOs.Caja;
 using BombonesApp2026.Servicios.Interfaces;
-using BombonesApp2026.Servicios.Mapeadores;
-using BombonesApp2026.Servicios.Servicios;
 
 namespace BombonesApp2026.Windows
 {
@@ -132,163 +129,163 @@ namespace BombonesApp2026.Windows
         }
         private void tsbNuevo_Click(object sender, EventArgs e)
         {
-            using (frmCajaAe frm = new frmCajaAe() { Text = "Nueva Caja" })
-            {
-                DialogResult dr = frm.ShowDialog();
-                if (dr == DialogResult.Cancel) return;
-                CajaEditDto? cajaEditDto = frm.GetCaja();
-                if (cajaEditDto == null) return;
-                try
-                {
-                    CajaCreateDto cajaCreateDto = cajaEditDto.ToCreateDto();
-                    int nuevoId = _cajaServicio.Agregar(cajaCreateDto);
-                    bool sePuedeVer = string.IsNullOrWhiteSpace(txtBuscar.Text) ||
-                        cajaCreateDto.Nombre.Contains(txtBuscar.Text);
-                    if (sePuedeVer)
-                    {
-                        paginaActual = _cajaServicio
-                            .ObtenerPaginaRegistro(cajaCreateDto.Nombre, cantidadPorPagina,
-                            filtroActivo, textoBuscar);
+            //using (frmCajaAe frm = new frmCajaAe() { Text = "Nueva Caja" })
+            //{
+            //    DialogResult dr = frm.ShowDialog();
+            //    if (dr == DialogResult.Cancel) return;
+            //    CajaEditDto? cajaEditDto = frm.GetCaja();
+            //    if (cajaEditDto == null) return;
+            //    try
+            //    {
+            //        CajaCreateDto cajaCreateDto = cajaEditDto.ToCreateDto();
+            //        int nuevoId = _cajaServicio.Agregar(cajaCreateDto);
+            //        bool sePuedeVer = string.IsNullOrWhiteSpace(txtBuscar.Text) ||
+            //            cajaCreateDto.Nombre.Contains(txtBuscar.Text);
+            //        if (sePuedeVer)
+            //        {
+            //            paginaActual = _cajaServicio
+            //                .ObtenerPaginaRegistro(cajaCreateDto.Nombre, cantidadPorPagina,
+            //                filtroActivo, textoBuscar);
 
-                    }
-                    RecargarGrilla();
-                    if (sePuedeVer)
-                    {
-                        var nuevoTipo = _bindingSource.List
-                            .Cast<CajaListDto>()
-                            .FirstOrDefault(tb => tb.ProductoId == nuevoId);
-                        if (nuevoTipo is null) return;
-                        _bindingSource.Position = _bindingSource.IndexOf(nuevoTipo);
-                        MessageBox.Show("Caja Agregada",
-                            "Mensaje", MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
+            //        }
+            //        RecargarGrilla();
+            //        if (sePuedeVer)
+            //        {
+            //            var nuevoTipo = _bindingSource.List
+            //                .Cast<CajaListDto>()
+            //                .FirstOrDefault(tb => tb.ProductoId == nuevoId);
+            //            if (nuevoTipo is null) return;
+            //            _bindingSource.Position = _bindingSource.IndexOf(nuevoTipo);
+            //            MessageBox.Show("Caja Agregada",
+            //                "Mensaje", MessageBoxButtons.OK,
+            //                MessageBoxIcon.Information);
 
-                    }
-                    else
-                    {
-                        MessageBox.Show($"Caja {cajaCreateDto.Nombre} agregada.\nNo se muestra por condición de filtrado o búsqueda",
-                            "Confirmación", MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message,
-                                "Error", MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                }
-            }
+            //        }
+            //        else
+            //        {
+            //            MessageBox.Show($"Caja {cajaCreateDto.Nombre} agregada.\nNo se muestra por condición de filtrado o búsqueda",
+            //                "Confirmación", MessageBoxButtons.OK,
+            //                MessageBoxIcon.Information);
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        MessageBox.Show(ex.Message,
+            //                    "Error", MessageBoxButtons.OK,
+            //                    MessageBoxIcon.Error);
+            //    }
+            //}
         }
 
 
         private void tsbBorrar_Click(object sender, EventArgs e)
         {
-            if (_bindingSource.Current == null)
-            {
-                MessageBox.Show("Debe seleccionar una fila de la grilla",
-                    "Advertencia",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-                return;
-            }
+            //if (_bindingSource.Current == null)
+            //{
+            //    MessageBox.Show("Debe seleccionar una fila de la grilla",
+            //        "Advertencia",
+            //        MessageBoxButtons.OK,
+            //        MessageBoxIcon.Warning);
+            //    return;
+            //}
 
-            CajaListDto cajaDto = (CajaListDto)_bindingSource.Current!;
-            DialogResult dr = MessageBox.Show($"¿Desea borrar la caja {cajaDto.Nombre}?",
-                "Confirmar",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question,
-                MessageBoxDefaultButton.Button2);
-            if (dr == DialogResult.No) return;
-            try
-            {
-                _cajaServicio.Borrar(cajaDto.ProductoId);
-                RecargarGrilla();
-                if (paginaActual > totalPaginas && totalPaginas > 0)
-                {
-                    paginaActual = totalPaginas;
-                    RecargarGrilla();
-                }
-                MessageBox.Show("Caja eliminada",
-                    "Mensaje",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
+            //CajaListDto cajaDto = (CajaListDto)_bindingSource.Current!;
+            //DialogResult dr = MessageBox.Show($"¿Desea borrar la caja {cajaDto.Nombre}?",
+            //    "Confirmar",
+            //    MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+            //    MessageBoxDefaultButton.Button2);
+            //if (dr == DialogResult.No) return;
+            //try
+            //{
+            //    _cajaServicio.Borrar(cajaDto.ProductoId);
+            //    RecargarGrilla();
+            //    if (paginaActual > totalPaginas && totalPaginas > 0)
+            //    {
+            //        paginaActual = totalPaginas;
+            //        RecargarGrilla();
+            //    }
+            //    MessageBox.Show("Caja eliminada",
+            //        "Mensaje",
+            //        MessageBoxButtons.OK,
+            //        MessageBoxIcon.Information);
+            //}
+            //catch (Exception ex)
+            //{
 
-                MessageBox.Show(ex.Message,
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+            //    MessageBox.Show(ex.Message,
+            //        "Error",
+            //        MessageBoxButtons.OK,
+            //        MessageBoxIcon.Error);
 
-            }
+            //}
 
         }
 
         private void tsbEditar_Click(object sender, EventArgs e)
         {
-            if (_bindingSource.Current == null)
-            {
-                MessageBox.Show("Debe seleccionar una fila de la grilla",
-                    "Advertencia",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-                return;
-            }
+            //if (_bindingSource.Current == null)
+            //{
+            //    MessageBox.Show("Debe seleccionar una fila de la grilla",
+            //        "Advertencia",
+            //        MessageBoxButtons.OK,
+            //        MessageBoxIcon.Warning);
+            //    return;
+            //}
 
-            CajaListDto cajaDto = (CajaListDto)_bindingSource.Current!;
-            CajaEditDto? cajaEditDto = _cajaServicio.ObtenerParaEditar(cajaDto.ProductoId);
-            if (cajaEditDto is null) return;
-            using (frmCajaAe frm = new frmCajaAe() { Text = "Editar Caja " })
-            {
-                frm.SetCaja(cajaEditDto);
-                DialogResult dr = frm.ShowDialog();
-                if (dr == DialogResult.Cancel) return;
-                cajaEditDto = frm.GetCaja();
-                if (cajaEditDto is null) return;
-                try
-                {
-                    _cajaServicio.Editar(cajaEditDto);
-                    int editadoId = cajaEditDto.ProductoId;
-                    bool sePuedeVer = string.IsNullOrWhiteSpace(txtBuscar.Text) ||
-                        cajaEditDto.Nombre.ToLower().Contains(txtBuscar.Text.ToLower());
+            //CajaListDto cajaDto = (CajaListDto)_bindingSource.Current!;
+            //CajaEditDto? cajaEditDto = _cajaServicio.ObtenerParaEditar(cajaDto.ProductoId);
+            //if (cajaEditDto is null) return;
+            //using (frmCajaAe frm = new frmCajaAe() { Text = "Editar Caja " })
+            //{
+            //    frm.SetCaja(cajaEditDto);
+            //    DialogResult dr = frm.ShowDialog();
+            //    if (dr == DialogResult.Cancel) return;
+            //    cajaEditDto = frm.GetCaja();
+            //    if (cajaEditDto is null) return;
+            //    try
+            //    {
+            //        _cajaServicio.Editar(cajaEditDto);
+            //        int editadoId = cajaEditDto.ProductoId;
+            //        bool sePuedeVer = string.IsNullOrWhiteSpace(txtBuscar.Text) ||
+            //            cajaEditDto.Nombre.ToLower().Contains(txtBuscar.Text.ToLower());
 
-                    if (sePuedeVer)
-                    {
-                        paginaActual = _cajaServicio.ObtenerPaginaRegistro(cajaEditDto.Nombre,
-                            cantidadPorPagina, filtroActivo, textoBuscar);
-                    }
-                    RecargarGrilla();
-                    if (sePuedeVer)
-                    {
+            //        if (sePuedeVer)
+            //        {
+            //            paginaActual = _cajaServicio.ObtenerPaginaRegistro(cajaEditDto.Nombre,
+            //                cantidadPorPagina, filtroActivo, textoBuscar);
+            //        }
+            //        RecargarGrilla();
+            //        if (sePuedeVer)
+            //        {
 
-                        var editadoTipo = _bindingSource.List
-                            .Cast<CajaListDto>()
-                            .FirstOrDefault(tb => tb.ProductoId == editadoId);
+            //            var editadoTipo = _bindingSource.List
+            //                .Cast<CajaListDto>()
+            //                .FirstOrDefault(tb => tb.ProductoId == editadoId);
 
-                        _bindingSource.Position = _bindingSource.IndexOf(editadoTipo);
-                        MessageBox.Show("Caja editada",
-                            "Mensaje",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        MessageBox.Show($"Caja {cajaEditDto.Nombre} editada.\nNo se muestra por condición de filtrado o búsqueda",
-                            "Confirmación",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
+            //            _bindingSource.Position = _bindingSource.IndexOf(editadoTipo);
+            //            MessageBox.Show("Caja editada",
+            //                "Mensaje",
+            //                MessageBoxButtons.OK,
+            //                MessageBoxIcon.Information);
+            //        }
+            //        else
+            //        {
+            //            MessageBox.Show($"Caja {cajaEditDto.Nombre} editada.\nNo se muestra por condición de filtrado o búsqueda",
+            //                "Confirmación",
+            //                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //        }
 
-                }
-                catch (Exception ex)
-                {
+            //    }
+            //    catch (Exception ex)
+            //    {
 
-                    MessageBox.Show(ex.Message,
-                         "Error",
-                         MessageBoxButtons.OK,
-                         MessageBoxIcon.Error);
+            //        MessageBox.Show(ex.Message,
+            //             "Error",
+            //             MessageBoxButtons.OK,
+            //             MessageBoxIcon.Error);
 
-                }
-            }
+            //    }
+            //}
 
         }
 
@@ -306,7 +303,7 @@ namespace BombonesApp2026.Windows
             CajaListDto cajaDto = (CajaListDto)_bindingSource.Current!;
             CajaDetailDto? cajaDetailDto = _cajaServicio.ObtenerCajaConDetalles(cajaDto.ProductoId);
             if (cajaDetailDto is null) return;
-            using (frmDetallesCaja frm=new frmDetallesCaja() { Text="Detalle de Caja"})
+            using (frmDetallesCaja frm = new frmDetallesCaja() { Text = "Detalle de Caja" })
             {
                 frm.SetCaja(cajaDetailDto);
                 frm.ShowDialog();
