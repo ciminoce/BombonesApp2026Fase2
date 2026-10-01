@@ -66,6 +66,7 @@
             cboBombones.Name = "cboBombones";
             cboBombones.Size = new Size(469, 23);
             cboBombones.TabIndex = 22;
+            cboBombones.SelectedIndexChanged += cboBombones_SelectedIndexChanged;
             // 
             // label1
             // 
@@ -85,6 +86,7 @@
             btnCancelar.Text = "Cancelar";
             btnCancelar.TextImageRelation = TextImageRelation.ImageAboveText;
             btnCancelar.UseVisualStyleBackColor = true;
+            btnCancelar.Click += btnCancelar_Click;
             // 
             // btnOk
             // 
@@ -95,6 +97,7 @@
             btnOk.Text = "Ok";
             btnOk.TextImageRelation = TextImageRelation.ImageAboveText;
             btnOk.UseVisualStyleBackColor = true;
+            btnOk.Click += btnOk_Click;
             // 
             // errorProvider1
             // 

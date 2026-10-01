@@ -382,7 +382,7 @@
             Controls.Add(toolStrip1);
             Name = "frmCajas";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "frmCiudades";
+            Text = "frmCajas";
             Load += frmCajas_Load;
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();

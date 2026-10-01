@@ -14,5 +14,15 @@ namespace BombonesApp2026.Servicios.Mapeadores
                 Cantidad = detalle.Cantidad,
             };
         }
+        public static DetalleCajaListDto ToListDto(this DetalleCajaCreateDto detalleDto)
+        {
+            return new DetalleCajaListDto
+            {
+                BombonId = detalleDto.BombonId,
+                NombreBombon = detalleDto.NombreBombon,
+                Cantidad = detalleDto.Cantidad
+            };
+        }
+
     }
 }

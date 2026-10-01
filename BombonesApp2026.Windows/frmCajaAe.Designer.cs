@@ -45,14 +45,14 @@
             panel1 = new Panel();
             splitContainer1 = new SplitContainer();
             dgvDatos = new DataGridView();
-            colId = new DataGridViewTextBoxColumn();
-            colBombon = new DataGridViewTextBoxColumn();
-            colCantidad = new DataGridViewTextBoxColumn();
             btnEditarBombon = new Button();
             btnBorrarBombon = new Button();
             btnAgregarBombon = new Button();
             chkEsSurtida = new CheckBox();
             txtCantidadBombones = new TextBox();
+            colId = new DataGridViewTextBoxColumn();
+            colBombon = new DataGridViewTextBoxColumn();
+            colCantidad = new DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)nudStock).BeginInit();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             panel1.SuspendLayout();
@@ -73,6 +73,7 @@
             btnCancelar.Text = "Cancelar";
             btnCancelar.TextImageRelation = TextImageRelation.ImageAboveText;
             btnCancelar.UseVisualStyleBackColor = true;
+            btnCancelar.Click += btnCancelar_Click;
             // 
             // btnOK
             // 
@@ -220,28 +221,6 @@
             dgvDatos.Size = new Size(574, 225);
             dgvDatos.TabIndex = 0;
             // 
-            // colId
-            // 
-            colId.HeaderText = "Id";
-            colId.Name = "colId";
-            colId.ReadOnly = true;
-            colId.Visible = false;
-            // 
-            // colBombon
-            // 
-            colBombon.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            colBombon.HeaderText = "Bombón";
-            colBombon.Name = "colBombon";
-            colBombon.ReadOnly = true;
-            // 
-            // colCantidad
-            // 
-            colCantidad.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            colCantidad.HeaderText = "Cantidad";
-            colCantidad.Name = "colCantidad";
-            colCantidad.ReadOnly = true;
-            colCantidad.Width = 80;
-            // 
             // btnEditarBombon
             // 
             btnEditarBombon.Image = Properties.Resources.edit_property_24px;
@@ -274,6 +253,7 @@
             btnAgregarBombon.Text = "Agregar Bombón";
             btnAgregarBombon.TextImageRelation = TextImageRelation.ImageAboveText;
             btnAgregarBombon.UseVisualStyleBackColor = true;
+            btnAgregarBombon.Click += btnAgregarBombon_Click;
             // 
             // chkEsSurtida
             // 
@@ -296,6 +276,31 @@
             txtCantidadBombones.Size = new Size(134, 23);
             txtCantidadBombones.TabIndex = 8;
             // 
+            // colId
+            // 
+            colId.DataPropertyName = "BombonId";
+            colId.HeaderText = "Id";
+            colId.Name = "colId";
+            colId.ReadOnly = true;
+            colId.Visible = false;
+            // 
+            // colBombon
+            // 
+            colBombon.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            colBombon.DataPropertyName = "NombreBombon";
+            colBombon.HeaderText = "Bombón";
+            colBombon.Name = "colBombon";
+            colBombon.ReadOnly = true;
+            // 
+            // colCantidad
+            // 
+            colCantidad.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colCantidad.DataPropertyName = "Cantidad";
+            colCantidad.HeaderText = "Cantidad";
+            colCantidad.Name = "colCantidad";
+            colCantidad.ReadOnly = true;
+            colCantidad.Width = 80;
+            // 
             // frmCajaAe
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -317,7 +322,8 @@
             Controls.Add(txtNombreCaja);
             Controls.Add(label2);
             Name = "frmCajaAe";
-            Text = "frmBombonAe";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "frmCajaAe";
             ((System.ComponentModel.ISupportInitialize)nudStock).EndInit();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
             panel1.ResumeLayout(false);
@@ -351,13 +357,13 @@
         private Panel panel1;
         private SplitContainer splitContainer1;
         private DataGridView dgvDatos;
-        private DataGridViewTextBoxColumn colId;
-        private DataGridViewTextBoxColumn colBombon;
-        private DataGridViewTextBoxColumn colCantidad;
         private Button btnBorrarBombon;
         private Button btnAgregarBombon;
         private Button btnEditarBombon;
         private CheckBox chkEsSurtida;
         private TextBox txtCantidadBombones;
+        private DataGridViewTextBoxColumn colId;
+        private DataGridViewTextBoxColumn colBombon;
+        private DataGridViewTextBoxColumn colCantidad;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Bombones2026.Servicios.DTOs.Paginacion;
+using BombonesApp2026.Entidades.Enum;
 using BombonesApp2026.Servicios.DTOs.Bombon;
 
 namespace BombonesApp2026.Servicios.Interfaces
@@ -8,6 +9,7 @@ namespace BombonesApp2026.Servicios.Interfaces
         int Agregar(BombonCreateDto bombonDto);
         void Borrar(int bombonId);
         void Editar(BombonEditDto bombonDto);
+        List<BombonListDto> ObtenerDatosCombo(BombonDefault defaultBombon);
         ResultadoPaginacionDto<BombonListDto> ObtenerPagina(int paginaActual, int cantidadPorPagina, bool? filtroActivo = null, string? textoBuscar = null);
         int ObtenerPaginaRegistro(string nombre, int cantidadPorPagina, bool? filtroActivo = null, string? textoBuscar = null);
         BombonEditDto? ObtenerParaEditar(int bombonId);

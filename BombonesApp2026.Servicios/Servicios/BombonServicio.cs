@@ -1,6 +1,9 @@
 ﻿using Bombones2026.Servicios.DTOs.Paginacion;
+using Bombones2026.Servicios.DTOs.Provincia;
 using BombonesApp2026.Datos.Interfaces;
+using BombonesApp2026.Datos.Repositorios;
 using BombonesApp2026.Entidades.Entidades;
+using BombonesApp2026.Entidades.Enum;
 using BombonesApp2026.Servicios.DTOs.Bombon;
 using BombonesApp2026.Servicios.Interfaces;
 using BombonesApp2026.Servicios.Mapeadores;
@@ -118,6 +121,33 @@ namespace BombonesApp2026.Servicios.Servicios
             int posicion = _bombonRepositorio
                 .ObtenerPosicionAlfabetica(nombre, filtroActivo, textoBuscar);
             return (int)Math.Ceiling((double)posicion / cantidadPorPagina);
+        }
+
+        public List<BombonListDto> ObtenerDatosCombo(BombonDefault bombonDefault)
+        {
+            var lista = _bombonRepositorio.ObtenerTodos()
+                    .Select(b=>b.ToListDto()).ToList();
+            if (bombonDefault == BombonDefault.Todos)
+            {
+                var defaultBombon= new BombonListDto
+                {
+                    ProductoId = 0,
+                    Nombre = "Todos"
+                };
+                lista.Insert(0, defaultBombon);
+
+            }
+            else
+            {
+                var defaultBombon = new BombonListDto
+                {
+                    ProductoId = 0,
+                    Nombre = "Seleccione"
+                };
+                lista.Insert(0, defaultBombon);
+            }
+            return lista;
+
         }
     }
 

@@ -1,12 +1,14 @@
 ﻿using Bombones2026.Servicios.DTOs.Paginacion;
 using BombonesApp2026.Servicios.DTOs.Caja;
 using BombonesApp2026.Servicios.Interfaces;
+using BombonesApp2026.Servicios.Servicios;
 
 namespace BombonesApp2026.Windows
 {
     public partial class frmCajas : Form
     {
         private readonly ICajaServicio _cajaServicio;
+        private readonly IBombonServicio _bombonServicio;
         private BindingSource _bindingSource = new BindingSource();
         private int paginaActual = 1;
         private int cantidadPorPagina = 10;
@@ -16,10 +18,11 @@ namespace BombonesApp2026.Windows
         private bool? filtroActivo = null;
         private string? textoBuscar = null;
 
-        public frmCajas(ICajaServicio cajaServicio)
+        public frmCajas(ICajaServicio cajaServicio, IBombonServicio bombonServicio)
         {
             InitializeComponent();
             _cajaServicio = cajaServicio;
+            _bombonServicio = bombonServicio;
             dgvDatos.DataSource = _bindingSource;
         }
 
@@ -129,6 +132,12 @@ namespace BombonesApp2026.Windows
         }
         private void tsbNuevo_Click(object sender, EventArgs e)
         {
+            using (frmCajaAe frm = new frmCajaAe(_bombonServicio) { Text = "Nueva Caja" })
+            {
+                DialogResult dr = frm.ShowDialog();
+                if (dr == DialogResult.Cancel) return;
+
+            }
             //using (frmCajaAe frm = new frmCajaAe() { Text = "Nueva Caja" })
             //{
             //    DialogResult dr = frm.ShowDialog();

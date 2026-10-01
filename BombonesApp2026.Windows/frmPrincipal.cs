@@ -112,7 +112,7 @@ namespace BombonesApp2026.Windows
 
         private void btnCajas_Click(object sender, EventArgs e)
         {
-            using (frmCajas frm = new frmCajas(_cajaServicio) { Text = "Listado de Cajas" }) 
+            using (frmCajas frm = new frmCajas(_cajaServicio, _bombonServicio) { Text = "Listado de Cajas" }) 
             {
                 frm.ShowDialog();
             }

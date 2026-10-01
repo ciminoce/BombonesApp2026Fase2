@@ -26,9 +26,6 @@ namespace BombonesApp2026.Servicios.Mapeadores
                 Nombre = cajaDto.Nombre,
                 Descripcion=cajaDto.Descripcion,
                 Stock = cajaDto.Stock,
-                Precio = cajaDto.Precio,
-                CantidadBombones = cajaDto.CantidadBombones,
-                EsSurtida = cajaDto.EsSurtida,
             };
         }
         public static Caja ToEntidad(this CajaCreateDto cajaDto)
@@ -60,9 +57,6 @@ namespace BombonesApp2026.Servicios.Mapeadores
                 Nombre = caja.Nombre,
                 Descripcion = caja.Descripcion,
                 Stock = caja.Stock,
-                Precio = caja.Precio,
-                CantidadBombones = caja.CantidadBombones,
-                EsSurtida = caja.EsSurtida,
                 Activo = caja.Activo
             };
         }
