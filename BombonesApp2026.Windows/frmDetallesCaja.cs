@@ -29,9 +29,11 @@ namespace BombonesApp2026.Windows
             _cajaDto = cajaDetailDto;
         }
 
-        private void btnCancelar_Click(object sender, EventArgs e)
+
+        private void btnCerrar_Click(object sender, EventArgs e)
         {
             Close();
+
         }
     }
 }

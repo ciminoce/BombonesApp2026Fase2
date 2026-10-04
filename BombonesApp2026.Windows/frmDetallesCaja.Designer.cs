@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            btnCancelar = new Button();
+            btnCerrar = new Button();
             txtNombreCaja = new TextBox();
             label2 = new Label();
             label3 = new Label();
@@ -53,17 +53,17 @@
             ((System.ComponentModel.ISupportInitialize)dgvDatos).BeginInit();
             SuspendLayout();
             // 
-            // btnCancelar
+            // btnCerrar
             // 
-            btnCancelar.Image = Properties.Resources.cancel_24px;
-            btnCancelar.Location = new Point(449, 536);
-            btnCancelar.Name = "btnCancelar";
-            btnCancelar.Size = new Size(75, 60);
-            btnCancelar.TabIndex = 10;
-            btnCancelar.Text = "Cerrar";
-            btnCancelar.TextImageRelation = TextImageRelation.ImageAboveText;
-            btnCancelar.UseVisualStyleBackColor = true;
-            btnCancelar.Click += btnCancelar_Click;
+            btnCerrar.Image = Properties.Resources.cancel_24px;
+            btnCerrar.Location = new Point(449, 536);
+            btnCerrar.Name = "btnCerrar";
+            btnCerrar.Size = new Size(75, 60);
+            btnCerrar.TabIndex = 10;
+            btnCerrar.Text = "Cerrar";
+            btnCerrar.TextImageRelation = TextImageRelation.ImageAboveText;
+            btnCerrar.UseVisualStyleBackColor = true;
+            btnCerrar.Click += btnCerrar_Click;
             // 
             // txtNombreCaja
             // 
@@ -238,7 +238,7 @@
             Controls.Add(panel1);
             Controls.Add(chkEsSurtida);
             Controls.Add(chkActivo);
-            Controls.Add(btnCancelar);
+            Controls.Add(btnCerrar);
             Controls.Add(txtDescripcion);
             Controls.Add(label6);
             Controls.Add(label3);
@@ -261,7 +261,7 @@
         #endregion
 
         private ComboBox cboTipoBombon;
-        private Button btnCancelar;
+        private Button btnCerrar;
         private TextBox txtNombreCaja;
         private Label label2;
         private Label label1;
