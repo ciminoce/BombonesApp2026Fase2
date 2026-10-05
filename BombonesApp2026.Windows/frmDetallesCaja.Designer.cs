@@ -260,17 +260,14 @@
 
         #endregion
 
-        private ComboBox cboTipoBombon;
         private Button btnCerrar;
         private TextBox txtNombreCaja;
         private Label label2;
-        private Label label1;
         private Label label3;
         private TextBox txtDescripcion;
         private Label label4;
         private TextBox txtPrecio;
         private Label label5;
-        private CheckBox chkTieneAzucar;
         private CheckBox chkActivo;
         private Label label6;
         private ErrorProvider errorProvider1;

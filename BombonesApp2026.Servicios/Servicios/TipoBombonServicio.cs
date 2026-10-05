@@ -1,5 +1,6 @@
 ﻿using Bombones2026.Servicios.DTOs.Paginacion;
 using Bombones2026.Servicios.DTOs.TipoBombon;
+using BombonesApp2026.Datos;
 using BombonesApp2026.Datos.Interfaces;
 using BombonesApp2026.Entidades.Entidades;
 using BombonesApp2026.Entidades.Enum;
@@ -11,9 +12,12 @@ namespace Bombones2026.Servicios.Servicios
     public class TipoBombonServicio : ITipoBombonServicio
     {
         private readonly ITipoBombonRepositorio _tipoBombonRepositorio;
-        public TipoBombonServicio(ITipoBombonRepositorio tipoBombonRepositorio)
+        private readonly IUnitOfWork _unitOfWork;
+        public TipoBombonServicio(ITipoBombonRepositorio tipoBombonRepositorio,
+            IUnitOfWork unitOfWork)
         {
             _tipoBombonRepositorio = tipoBombonRepositorio;
+            _unitOfWork = unitOfWork;
         }
         public ResultadoPaginacionDto<TipoBombonListDto> ObtenerPagina(int paginaActual,
             int cantidadPorPagina, bool? filtroActivo = null, string? textoBuscar = null)
@@ -23,13 +27,7 @@ namespace Bombones2026.Servicios.Servicios
                 var resultado = _tipoBombonRepositorio.ObtenerPagina(paginaActual,
                     cantidadPorPagina, filtroActivo, textoBuscar);
                 var listaDto = resultado.lista
-                    .Select(tb => new TipoBombonListDto
-                    {
-                        TipoBombonId = tb.TipoBombonId,
-                        Nombre = tb.Nombre,
-                        Descripcion = tb.Descripcion,
-                        Activo = tb.Activo
-                    }).ToList();
+                    .Select(tb => tb.ToListDto()).ToList();
                 return new ResultadoPaginacionDto<TipoBombonListDto>
                 {
                     Items = listaDto,
@@ -38,22 +36,16 @@ namespace Bombones2026.Servicios.Servicios
                     PaginaActual = paginaActual
                 };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                throw new Exception($"Error al intentar obtener la página {ex.Message}");
             }
         }
         public List<TipoBombonListDto> ObtenerTodos()
         {
             return _tipoBombonRepositorio.ObtenerTodos()
-                .Select(tb => new TipoBombonListDto
-                {
-                    TipoBombonId = tb.TipoBombonId,
-                    Nombre = tb.Nombre,
-                    Descripcion = tb.Descripcion,
-                    Activo = tb.Activo
-                }).ToList();
+                .Select(tb => tb.ToListDto()).ToList();
         }
 
         public int Agregar(TipoBombonCreateDto? tipoDto)
@@ -67,10 +59,7 @@ namespace Bombones2026.Servicios.Servicios
             {
                 throw new ArgumentNullException(nameof(tipoDto.Nombre), "El nombre es requerido");
             }
-            TipoBombon tipo = new TipoBombon();
-            tipo.Nombre = tipoDto.Nombre;
-            tipo.Descripcion = tipoDto.Descripcion;
-            tipo.Activo = true;
+            TipoBombon tipo = tipoDto.ToEntidad();
             if (_tipoBombonRepositorio.ExisteTipoBombon(tipo))
             {
                 throw new InvalidOperationException($"Ya existe un tipo de bombón {tipo.Nombre}");
@@ -78,6 +67,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _tipoBombonRepositorio.Agregar(tipo);
+                _unitOfWork.Commit();
                 return tipo.TipoBombonId;
             }
             catch (Exception ex)
@@ -106,6 +96,7 @@ namespace Bombones2026.Servicios.Servicios
                 throw new InvalidOperationException($"No se puede eliminar el tipo de bombón (ID: {tipoBombonId}) porque tiene registros relacionados en el sistema.");
             }
             _tipoBombonRepositorio.Borrar(tipoBombonId);
+            _unitOfWork.Commit();
         }
 
         public void Editar(TipoBombonEditDto? tipoDto)
@@ -114,15 +105,10 @@ namespace Bombones2026.Servicios.Servicios
                 throw new ArgumentNullException(nameof(tipoDto), "El tipo de bombón no puede ser nulo");
             if (string.IsNullOrWhiteSpace(tipoDto.Nombre))
                 throw new ArgumentException(nameof(tipoDto.Nombre), "El nombre del tipo de bombón es requerido");
-            TipoBombon tipo = new TipoBombon
-            {
-                TipoBombonId = tipoDto.TipoBombonId,
-                Nombre = tipoDto.Nombre,
-                Descripcion = tipoDto.Descripcion,
-                Activo = tipoDto.Activo
-            };
+            TipoBombon tipo = tipoDto.ToEntidad();
             if (_tipoBombonRepositorio.ExisteTipoBombon(tipo)) throw new InvalidOperationException($"Ya existe un tipo de bombón {tipo.Nombre}");
-            _tipoBombonRepositorio.Editar(tipo);
+            _tipoBombonRepositorio.Editar(tipo,tipo.TipoBombonId);
+            _unitOfWork.Commit();
         }
         public TipoBombonEditDto ObtenerParaEditar(int id)
         {
@@ -133,13 +119,7 @@ namespace Bombones2026.Servicios.Servicios
 
             TipoBombon? tipo = _tipoBombonRepositorio.ObtenerPorId(id);
             if (tipo is null) throw new ArgumentException(nameof(id), $"Id {id} no encontrado");
-            TipoBombonEditDto tipoDto = new TipoBombonEditDto
-            {
-                TipoBombonId = tipo.TipoBombonId,
-                Nombre = tipo.Nombre,
-                Descripcion = tipo.Descripcion,
-                Activo = tipo.Activo
-            };
+            TipoBombonEditDto tipoDto = tipo.ToEditDto();
             return tipoDto;
         }
 

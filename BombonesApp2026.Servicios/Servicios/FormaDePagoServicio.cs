@@ -1,17 +1,22 @@
 ﻿using Bombones2026.Servicios.DTOs.FormaDePago;
 using Bombones2026.Servicios.DTOs.Paginacion;
+using BombonesApp2026.Datos;
 using BombonesApp2026.Datos.Interfaces;
 using BombonesApp2026.Entidades.Entidades;
 using BombonesApp2026.Servicios.Interfaces;
+using BombonesApp2026.Servicios.Mapeadores;
 
 namespace Bombones2026.Servicios.Servicios
 {
     public class FormaDePagoServicio : IFormaDePagoServicio
     {
         private readonly IFormaDePagoRepositorio _formasDePagoRepositorio;
-        public FormaDePagoServicio(IFormaDePagoRepositorio formasDePagoRepositorio)
+        private readonly IUnitOfWork _unitOfWork;
+        public FormaDePagoServicio(IFormaDePagoRepositorio formasDePagoRepositorio,
+            IUnitOfWork unitOfWork)
         {
             _formasDePagoRepositorio = formasDePagoRepositorio;
+            _unitOfWork=unitOfWork;
         }
 
         public ResultadoPaginacionDto<FormaDePagoListDto> ObtenerPagina(int paginaActual,
@@ -22,12 +27,7 @@ namespace Bombones2026.Servicios.Servicios
                 var resultado = _formasDePagoRepositorio.ObtenerPagina(paginaActual,
                     cantidadPorPagina, filtroActivo, textoBuscar);
                 var listaDto = resultado.lista
-                        .Select(f => new FormaDePagoListDto
-                        {
-                            FormaDePagoId = f.FormaDePagoId,
-                            Nombre = f.Nombre,
-                            Activo = f.Activo,
-                        }).ToList();
+                        .Select(f => f.ToListDto()).ToList();
                 return new ResultadoPaginacionDto<FormaDePagoListDto>
                 {
                     Items = listaDto,
@@ -36,10 +36,10 @@ namespace Bombones2026.Servicios.Servicios
                     PaginaActual = paginaActual
                 };
             }
-            catch (Exception)
+            catch (Exception ex )
             {
 
-                throw;
+                throw new Exception($"No se pudo obtener la página {ex.Message}");
             }
         }
 
@@ -47,12 +47,7 @@ namespace Bombones2026.Servicios.Servicios
         public List<FormaDePagoListDto> ObtenerTodos()
         {
             return _formasDePagoRepositorio.ObtenerTodos()
-                .Select(f => new FormaDePagoListDto
-                {
-                    FormaDePagoId = f.FormaDePagoId,
-                    Nombre = f.Nombre,
-                    Activo = f.Activo,
-                }).ToList();
+                .Select(f =>f.ToListDto()).ToList();
         }
         public int Agregar(FormaDePagoCreateDto? formaDePagoDto)
         {
@@ -60,15 +55,12 @@ namespace Bombones2026.Servicios.Servicios
                 throw new ArgumentNullException(nameof(formaDePagoDto), "La forma de pago no puede ser nula");
             if (string.IsNullOrWhiteSpace(formaDePagoDto.Nombre))
                 throw new ArgumentException(nameof(formaDePagoDto.Nombre), "El nombre de la forma de pago es requerido");
-            FormaDePago formaDePago = new FormaDePago
-            {
-                Nombre = formaDePagoDto.Nombre,
-                Activo = true//Nuevas formas de pago son activas por defecto
-            };
+            FormaDePago formaDePago = formaDePagoDto.ToEntidad();
             if (_formasDePagoRepositorio.ExisteFormaDePago(formaDePago)) throw new InvalidCastException($"Ya existe una Forma de Pago {formaDePago.Nombre}");
             try
             {
                 _formasDePagoRepositorio.Agregar(formaDePago);
+                _unitOfWork.Commit();
                 return formaDePago.FormaDePagoId;
             }
             catch (Exception ex)
@@ -96,6 +88,7 @@ namespace Bombones2026.Servicios.Servicios
                 throw new InvalidOperationException($"No se puede eliminar la forma de pago (ID: {formaDePagoId}) porque tiene registros relacionados en el sistema.");
             }
             _formasDePagoRepositorio.Borrar(formaDePagoId);
+            _unitOfWork.Commit();
         }
 
         public void Editar(FormaDePagoEditDto? formaDePagoDto)
@@ -104,14 +97,10 @@ namespace Bombones2026.Servicios.Servicios
                 throw new ArgumentNullException(nameof(formaDePagoDto), "La forma de pago no puede ser nula");
             if (string.IsNullOrWhiteSpace(formaDePagoDto.Nombre))
                 throw new ArgumentException(nameof(formaDePagoDto.Nombre), "El nombre de la forma de pago es requerido");
-            FormaDePago formaDePago = new FormaDePago
-            {
-                FormaDePagoId = formaDePagoDto.FormaDePagoId,
-                Nombre = formaDePagoDto.Nombre,
-                Activo = formaDePagoDto.Activo
-            };
+            FormaDePago formaDePago = formaDePagoDto.ToEntidad();
             if (_formasDePagoRepositorio.ExisteFormaDePago(formaDePago)) throw new InvalidOperationException($"Ya existe una Forma de Pago {formaDePago.Nombre}");
-            _formasDePagoRepositorio.Editar(formaDePago);
+            _formasDePagoRepositorio.Editar(formaDePago, formaDePago.FormaDePagoId);
+            _unitOfWork.Commit();
         }
         public FormaDePagoEditDto ObtenerParaEditar(int id)
         {
@@ -122,23 +111,13 @@ namespace Bombones2026.Servicios.Servicios
 
             FormaDePago? formaDePago = _formasDePagoRepositorio.ObtenerPorId(id);
             if (formaDePago is null) throw new ArgumentException(nameof(id), $"Id {id} no encontrado");
-            FormaDePagoEditDto formaDePagoDto = new FormaDePagoEditDto
-            {
-                FormaDePagoId = formaDePago.FormaDePagoId,
-                Nombre = formaDePago.Nombre,
-                Activo = formaDePago.Activo
-            };
+            FormaDePagoEditDto formaDePagoDto = formaDePago.ToEditDto();
             return formaDePagoDto;
         }
         public List<FormaDePagoListDto> FiltrarPorActivo(bool activo)
         {
             return _formasDePagoRepositorio.FiltrarPorActivo(activo)
-                .Select(f => new FormaDePagoListDto
-                {
-                    FormaDePagoId = f.FormaDePagoId,
-                    Nombre = f.Nombre,
-                    Activo = f.Activo
-                }).ToList();
+                .Select(f =>f.ToListDto()).ToList();
         }
 
         public int ObtenerPaginaRegistro(string nombre, int cantidadPorPagina,

@@ -4,22 +4,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BombonesApp2026.Datos.Repositorios
 {
-    public class FormaDePagoRepositorio : IFormaDePagoRepositorio
+    public class FormaDePagoRepositorio :Repositorio<FormaDePago>, IFormaDePagoRepositorio
     {
-        private readonly BombonesDbContext _context;
-        public FormaDePagoRepositorio(BombonesDbContext context)
+        public FormaDePagoRepositorio(BombonesDbContext context) : base(context)
         {
-            _context = context;
         }
-        public List<FormaDePago> ObtenerTodos()
-        {
-            return _context.FormasDePago
-                .AsNoTracking()
-                .ToList();
-        }
+
         public (List<FormaDePago> lista, int cantidadRegistros) ObtenerPagina(int paginaActual,
-    int cantidadPorPagina, bool? filtroActivo = null,
-    string? textoBuscar = null)
+                int cantidadPorPagina, bool? filtroActivo = null,
+                string? textoBuscar = null)
         {
             IQueryable<FormaDePago> query = _context
                 .FormasDePago.AsNoTracking();
@@ -63,49 +56,11 @@ namespace BombonesApp2026.Datos.Repositorios
                 .Where(f => f.Activo == activo)
                 .ToList();
         }
-        public void Agregar(FormaDePago formaDePago)
-        {
-            _context.FormasDePago.Add(formaDePago);
-
-            _context.SaveChanges();
-
-        }
-        public void Editar(FormaDePago formaDePago)
-        {
-            var formaDePagoEnDb = _context.FormasDePago.Find(formaDePago.FormaDePagoId);
-
-            if (formaDePagoEnDb is null) throw new Exception("Forma de pago no encontrada");
-            formaDePagoEnDb.Nombre = formaDePago.Nombre;
-            formaDePagoEnDb.Activo = formaDePago.Activo;
-
-            _context.SaveChanges();
-
-        }
-        public void Borrar(int id)
-        {
-            var formaDePagoEnDb = _context.FormasDePago
-                .Find(id);
-            if (formaDePagoEnDb is null) throw new Exception("Forma de pago no encontrada");
-            _context.FormasDePago.Remove(formaDePagoEnDb);
-            _context.SaveChanges();
-        }
-        public FormaDePago? ObtenerPorId(int id)
-        {
-            return _context.FormasDePago.AsNoTracking()
-                .FirstOrDefault(f => f.FormaDePagoId == id);
-        }
 
         public bool ExisteFormaDePago(FormaDePago formaDePago)
         {
-            if (formaDePago.FormaDePagoId == 0)
-            {
-                return _context.FormasDePago.Any(f => f.Nombre == formaDePago.Nombre);
-            }
-            else
-            {
-                return _context.FormasDePago.Any(f => f.Nombre == formaDePago.Nombre &&
-                        f.FormaDePagoId != formaDePago.FormaDePagoId);
-            }
+            return _context.FormasDePago.Any(f => f.Nombre == formaDePago.Nombre &&
+                    f.FormaDePagoId != formaDePago.FormaDePagoId);
         }
 
         public bool TieneRegistrosRelacionados(int formaDePagoId)

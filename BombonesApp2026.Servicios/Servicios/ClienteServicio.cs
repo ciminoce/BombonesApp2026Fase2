@@ -1,4 +1,5 @@
 ﻿using Bombones2026.Servicios.DTOs.Paginacion;
+using BombonesApp2026.Datos;
 using BombonesApp2026.Datos.Interfaces;
 using BombonesApp2026.Entidades.Entidades;
 using BombonesApp2026.Servicios.DTOs.Cliente;
@@ -10,9 +11,12 @@ namespace BombonesApp2026.Servicios.Servicios
     public class ClienteServicio : IClienteServicio
     {
         private readonly IClienteRepositorio _clienteRepositorio;
-        public ClienteServicio(IClienteRepositorio bombonRepositorio)
+        private readonly IUnitOfWork _unitOfWork;
+        public ClienteServicio(IClienteRepositorio clienteRepositorio,
+            IUnitOfWork unitOfWork)
         {
-            _clienteRepositorio = bombonRepositorio;
+            _clienteRepositorio = clienteRepositorio;
+            _unitOfWork = unitOfWork;
         }
         public ResultadoPaginacionDto<ClienteListDto> ObtenerPagina(int paginaActual,
             int cantidadPorPagina, bool? filtroActivo = null, string? textoBuscar = null)
@@ -31,10 +35,10 @@ namespace BombonesApp2026.Servicios.Servicios
                     PaginaActual = paginaActual
                 };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                throw new Exception($"No se pudo obtener la página {ex.Message}");
             }
         }
 
@@ -53,6 +57,7 @@ namespace BombonesApp2026.Servicios.Servicios
             try
             {
                 _clienteRepositorio.Agregar(cliente);
+                _unitOfWork.Commit();
                 return cliente.ClienteId;
             }
             catch (Exception ex)
@@ -78,6 +83,7 @@ namespace BombonesApp2026.Servicios.Servicios
             try
             {
                 _clienteRepositorio.Borrar(clienteId);
+                _unitOfWork.Commit();
             }
             catch (Exception ex)
             {
@@ -108,7 +114,8 @@ namespace BombonesApp2026.Servicios.Servicios
             }
             Cliente cliente = clienteDto.ToEntidad();
             if (_clienteRepositorio.ExisteCliente(cliente)) throw new InvalidOperationException($"Ya existe un cliente {cliente.Documento}");
-            _clienteRepositorio.Editar(cliente);
+            _clienteRepositorio.Editar(cliente, cliente.ClienteId);
+            _unitOfWork.Commit();
 
         }
 

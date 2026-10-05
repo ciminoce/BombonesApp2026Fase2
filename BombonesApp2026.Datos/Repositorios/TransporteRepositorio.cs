@@ -4,18 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BombonesApp2026.Datos.Repositorios
 {
-    public class TransporteRepositorio : ITransporteRepositorio
+    public class TransporteRepositorio :Repositorio<Transporte>, ITransporteRepositorio
     {
-        private readonly BombonesDbContext _context;
-        public TransporteRepositorio(BombonesDbContext context)
+        public TransporteRepositorio(BombonesDbContext context) : base(context)
         {
-            _context = context;
         }
-        public void Agregar(Transporte transporte)
-        {
-            _context.Transportes.Add(transporte);
-            _context.SaveChanges();
-        }
+
         public (List<Transporte> lista, int cantidadRegistros) ObtenerPagina(int paginaActual,
             int cantidadPorPagina, bool? filtroActivo = null,
             int? provinciaIdFiltro = null,
@@ -66,53 +60,24 @@ namespace BombonesApp2026.Datos.Repositorios
                     .Compare(t.NombreEmpresa, nombre) <= 0);
         }
 
-        public void Borrar(int transporteId)
-        {
-            var transporteEnDb = _context.Transportes
-                .Find(transporteId);
-            if (transporteEnDb is null) throw new Exception("Transporte no encontrado");
-            _context.Transportes.Remove(transporteEnDb);
-            _context.SaveChanges();
-        }
-
-        public void Editar(Transporte transporte)
-        {
-            var transporteEnDb = _context.Transportes.Find(transporte.TransporteId);
-
-            if (transporteEnDb is null) throw new Exception("Transporte no encontrado");
-            transporteEnDb.NombreEmpresa = transporte.NombreEmpresa;
-            transporteEnDb.Telefono = transporte.Telefono;
-            transporteEnDb.Email = transporte.Email;
-            transporteEnDb.Activo = transporte.Activo;
-
-            _context.SaveChanges();
-        }
-
         public bool ExisteTransporte(Transporte transporte)
         {
-            if (transporte.TransporteId == 0)
-            {
-                return _context.Transportes
-                    .Any(t => t.NombreEmpresa == transporte.NombreEmpresa &&
-                    t.ProvinciaId == transporte.ProvinciaId);
-            }
-            else
-            {
-                return _context.Transportes
-                    .Any(t => t.NombreEmpresa == transporte.NombreEmpresa &&
-                    t.ProvinciaId == transporte.ProvinciaId &&
-                    t.TransporteId != transporte.TransporteId);
+            return _context.Transportes
+                .Any(t => t.NombreEmpresa == transporte.NombreEmpresa &&
+                t.ProvinciaId == transporte.ProvinciaId &&
+                t.TransporteId != transporte.TransporteId);
 
-            }
         }
 
-        public Transporte? ObtenerPorId(int transporteId)
+        public override Transporte? ObtenerPorId(int transporteId)
         {
-            return _context.Transportes.AsNoTracking()
+            return _context.Transportes
+                .Include(t=>t.Provincia)
+                .AsNoTracking()
                 .FirstOrDefault(t => t.TransporteId == transporteId);
         }
 
-        public List<Transporte> ObtenerTodos()
+        public override List<Transporte> ObtenerTodos()
         {
             return _context.Transportes
                 .Include(t => t.Provincia)

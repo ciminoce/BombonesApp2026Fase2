@@ -4,15 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BombonesApp2026.Datos.Repositorios
 {
-    public class ClienteRepositorio : IClienteRepositorio
+    public class ClienteRepositorio :Repositorio<Cliente>, IClienteRepositorio
     {
-        private readonly BombonesDbContext _context;
-
-        public ClienteRepositorio(BombonesDbContext context)
+        public ClienteRepositorio(BombonesDbContext context) : base(context)
         {
-            _context = context;
         }
-        public List<Cliente> ObtenerTodos()
+
+        public override List<Cliente> ObtenerTodos()
         {
             return _context.Clientes
                 .Include(c => c.Ciudad)
@@ -53,56 +51,22 @@ namespace BombonesApp2026.Datos.Repositorios
                     .Compare(c.Nombre, nombre) <= 0);
         }
 
-        public void Agregar(Cliente cliente)
-        {
-            _context.Clientes.Add(cliente);
-            _context.SaveChanges();
-        }
 
-        public bool ExisteBombon(Cliente cliente)
-        {
-            return _context.Clientes.Any(c => c.Documento == cliente.Documento
-                && c.ClienteId != cliente.ClienteId);
 
-        }
-        public void Borrar(int clienteId)
-        {
-            var clienteEnDb = _context.Clientes.Find(clienteId);
-            if (clienteEnDb is null) throw new KeyNotFoundException($"No se encuentra un Cliente con ID: {clienteId}");
-            _context.Clientes.Remove(clienteEnDb);
-            _context.SaveChanges();
-        }
-
-        public Cliente? ObtenerPorId(int clienteId)
+        public override Cliente? ObtenerPorId(int clienteId)
         {
             return _context.Clientes
+                .Include(c=>c.Ciudad)
+                .ThenInclude(ci=>ci.Provincia)
                 .FirstOrDefault(c => c.ClienteId == clienteId);
         }
 
-        public void Editar(Cliente cliente)
-        {
-            var clienteEnDb = _context.Clientes.Find(cliente.ClienteId);
-
-            if (clienteEnDb is null) throw new Exception("Cliente no encontrado");
-            clienteEnDb.Nombre = cliente.Nombre;
-            clienteEnDb.Apellido = cliente.Apellido;
-            clienteEnDb.Telefono = cliente.Telefono;
-            clienteEnDb.Email = cliente.Email;
-            clienteEnDb.Calle = cliente.Calle;
-            clienteEnDb.Numero = cliente.Numero;
-            clienteEnDb.CodigoPostal = cliente.CodigoPostal;
-            clienteEnDb.CiudadId = cliente.CiudadId;
-            clienteEnDb.Activo = cliente.Activo;
-
-
-
-            _context.SaveChanges();
-
-        }
 
         public bool ExisteCliente(Cliente cliente)
         {
-            return _context.Clientes.Any(c => c.Documento == cliente.Documento);
+            return _context.Clientes
+                .Any(c => c.Documento == cliente.Documento 
+                && c.ClienteId!=cliente.ClienteId);
         }
     }
 }

@@ -1,17 +1,22 @@
 ﻿using Bombones2026.Servicios.DTOs.Paginacion;
 using Bombones2026.Servicios.DTOs.Transporte;
+using BombonesApp2026.Datos;
 using BombonesApp2026.Datos.Interfaces;
 using BombonesApp2026.Entidades.Entidades;
 using BombonesApp2026.Servicios.Interfaces;
+using BombonesApp2026.Servicios.Mapeadores;
 
 namespace Bombones2026.Servicios.Servicios
 {
     public class TransporteServicio : ITransporteServicio
     {
         private readonly ITransporteRepositorio _transporteRepositorio;
-        public TransporteServicio(ITransporteRepositorio transporteRepositorio)
+        private readonly IUnitOfWork _unitOfWork;
+        public TransporteServicio(ITransporteRepositorio transporteRepositorio,
+            IUnitOfWork unitOfWork)
         {
             _transporteRepositorio = transporteRepositorio;
+            _unitOfWork=unitOfWork;
         }
         public ResultadoPaginacionDto<TransporteListDto> ObtenerPagina(int paginaActual,
                 int cantidadPorPagina, bool? filtroActivo = null,
@@ -23,15 +28,7 @@ namespace Bombones2026.Servicios.Servicios
                 var resultado = _transporteRepositorio.ObtenerPagina(paginaActual,
                     cantidadPorPagina, filtroActivo, provinciaIdFiltro, textoBuscar);
                 var listaDto = resultado.lista
-                    .Select(tb => new TransporteListDto
-                    {
-                        TransporteId = tb.TransporteId,
-                        NombreEmpresa = tb.NombreEmpresa,
-                        Telefono = tb.Telefono,
-                        Email = tb.Email,
-                        Provincia = tb.Provincia!.NombreProvincia,
-                        Activo = tb.Activo
-                    }).ToList();
+                    .Select(t=>t.ToListDto()).ToList();
                 return new ResultadoPaginacionDto<TransporteListDto>
                 {
                     Items = listaDto,
@@ -40,10 +37,10 @@ namespace Bombones2026.Servicios.Servicios
                     PaginaActual = paginaActual
                 };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                throw new Exception($"Error al intentar obtener la página {ex.Message}");
             }
         }
 
@@ -66,14 +63,7 @@ namespace Bombones2026.Servicios.Servicios
                 throw new ArgumentNullException(nameof(transporteDto.Email), "El Email es requerido");
             }
 
-            Transporte transporte = new Transporte()
-            {
-                NombreEmpresa = transporteDto.NombreEmpresa,
-                Telefono = transporteDto.Telefono,
-                Email = transporteDto.Email,
-                ProvinciaId = transporteDto.ProvinciaId,
-                Activo = true
-            };
+            Transporte transporte = transporteDto.ToEntidad();
             if (_transporteRepositorio.ExisteTransporte(transporte))
             {
                 throw new InvalidOperationException($"Ya existe un transporte {transporte.NombreEmpresa}");
@@ -81,6 +71,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _transporteRepositorio.Agregar(transporte);
+                _unitOfWork.Commit();
                 return transporte.TransporteId;
             }
             catch (Exception ex)
@@ -108,7 +99,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _transporteRepositorio.Borrar(transporteId);
-
+                _unitOfWork.Commit();
             }
             catch (Exception ex)
             {
@@ -135,22 +126,15 @@ namespace Bombones2026.Servicios.Servicios
             {
                 throw new ArgumentNullException(nameof(transporteDto.Email), "El Email es requerido");
             }
-            Transporte transporte = new Transporte()
-            {
-                TransporteId = transporteDto.TransporteId,
-                NombreEmpresa = transporteDto.NombreEmpresa,
-                Telefono = transporteDto.Telefono,
-                Email = transporteDto.Email,
-                ProvinciaId = transporteDto.ProvinciaId,
-                Activo = transporteDto.Activo
-            };
+            Transporte transporte = transporteDto.ToEntidad();
             if (_transporteRepositorio.ExisteTransporte(transporte))
             {
                 throw new InvalidOperationException($"Ya existe un transporte {transporte.NombreEmpresa}");
             }
             try
             {
-                _transporteRepositorio.Editar(transporte);
+                _transporteRepositorio.Editar(transporte, transporte.TransporteId);
+                _unitOfWork.Commit();
             }
             catch (Exception ex)
             {
@@ -170,15 +154,7 @@ namespace Bombones2026.Servicios.Servicios
 
                 Transporte? transporte = _transporteRepositorio.ObtenerPorId(transporteId);
                 if (transporte is null) throw new ArgumentException(nameof(transporteId), $"Id {transporteId} no encontrado");
-                TransporteEditDto transporteDto = new TransporteEditDto
-                {
-                    TransporteId = transporte.TransporteId,
-                    NombreEmpresa = transporte.NombreEmpresa,
-                    Telefono = transporte.Telefono,
-                    Email = transporte.Email,
-                    ProvinciaId = transporte.ProvinciaId,
-                    Activo = transporte.Activo
-                };
+                TransporteEditDto transporteDto = transporte.ToEditDto();
                 return transporteDto;
 
             }
@@ -192,16 +168,7 @@ namespace Bombones2026.Servicios.Servicios
         public List<TransporteListDto> ObtenerTodos()
         {
             return _transporteRepositorio.ObtenerTodos()
-                .Select(t => new TransporteListDto
-                {
-                    TransporteId = t.TransporteId,
-                    NombreEmpresa = t.NombreEmpresa,
-                    Provincia = t.Provincia is not null ? t.Provincia.NombreProvincia : "Sin Provincia",
-                    Telefono = t.Telefono,
-                    Email = t.Email,
-                    Activo = t.Activo
-
-                }).ToList();
+                .Select(t =>t.ToListDto()).ToList();
         }
 
         public int ObtenerPaginaRegistro(string nombre, int cantidadPorPagina,

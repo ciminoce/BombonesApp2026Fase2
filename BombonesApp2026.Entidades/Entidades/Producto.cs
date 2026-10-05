@@ -6,7 +6,6 @@
         private int _productoId;
         private string _nombre = null!;
         private string? _descripcion;
-        private decimal _precio;
         private int _stock;
 
         // Propiedades con validación interna

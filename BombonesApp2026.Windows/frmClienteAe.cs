@@ -1,6 +1,5 @@
 ﻿using Bombones2026.Servicios.DTOs.Ciudad;
 using Bombones2026.Servicios.DTOs.Provincia;
-using Bombones2026.Servicios.Servicios;
 using BombonesApp2026.Entidades.Enum;
 using BombonesApp2026.Servicios.DTOs.Cliente;
 using BombonesApp2026.Servicios.Interfaces;
@@ -58,7 +57,7 @@ namespace BombonesApp2026.Windows
                 cboCiudad.SelectedValue = _clienteDto.CiudadId;
                 chkActivo.Checked = _clienteDto.Activo;
                 chkActivo.Enabled = true;
-
+                txtDocumento.Enabled = false;
             }
 
         }
@@ -96,7 +95,7 @@ namespace BombonesApp2026.Windows
         {
             if (ValidarDatos())
             {
-                if(_clienteDto is null)
+                if (_clienteDto is null)
                 {
                     _clienteDto = new ClienteEditDto();
                 }

@@ -45,6 +45,7 @@ namespace BombonesApp2026.Windows
 
             var context =
                 new BombonesDbContext(options);
+            IUnitOfWork unitOfWork = new UnitOfWork(context);
             //instanciar repositorios y servicios aquí si es necesario
             ITipoBombonRepositorio tipoBombonRepositorio = new TipoBombonRepositorio(context);
             IFormaDePagoRepositorio formaDePagoRepositorio = new FormaDePagoRepositorio(context);
@@ -56,14 +57,14 @@ namespace BombonesApp2026.Windows
             IClienteRepositorio clienteRepositorio = new ClienteRepositorio(context);
             ICajaRepositorio cajaRepositorio=new CajaRepositorio(context);
 
-            ITipoBombonServicio tipoBombonServicio = new TipoBombonServicio(tipoBombonRepositorio);
-            IFormaDePagoServicio formaDePagoServicio = new FormaDePagoServicio(formaDePagoRepositorio);
+            ITipoBombonServicio tipoBombonServicio = new TipoBombonServicio(tipoBombonRepositorio,unitOfWork);
+            IFormaDePagoServicio formaDePagoServicio = new FormaDePagoServicio(formaDePagoRepositorio,unitOfWork);
             IRolServicio rolServicio = new RolServicio(rolRepositorio);
             IProvinciaServicio provinciaServicio = new ProvinciaServicio(provinciaRepositorio);
             ICiudadServicio ciudadServicio = new CiudadServicio(ciudadRepositorio);
-            ITransporteServicio transporteServicio = new TransporteServicio(transporteRepositorio);
+            ITransporteServicio transporteServicio = new TransporteServicio(transporteRepositorio,unitOfWork);
             IBombonServicio bombonServicio = new BombonServicio(bombonRepositorio);
-            IClienteServicio clienteServicio = new ClienteServicio(clienteRepositorio);
+            IClienteServicio clienteServicio = new ClienteServicio(clienteRepositorio,unitOfWork);
             ICajaServicio cajaServicio=new CajaServicio(cajaRepositorio);
             Application.Run(new frmPrincipal(
                 tipoBombonServicio,
