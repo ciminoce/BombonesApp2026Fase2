@@ -58,7 +58,7 @@ namespace CajaesApp2026.Servicios.Servicios
             }
             Caja caja = cajaDto.ToEntidad();
             if (_cajaRepositorio.ExisteCaja(caja)) throw new InvalidOperationException($"Ya existe una caja {caja.Nombre}");
-            _cajaRepositorio.Editar(caja);
+            _cajaRepositorio.Editar(caja, cajaDto.ProductoId);
 
         }
 

@@ -1,7 +1,6 @@
 ﻿using Bombones2026.Servicios.DTOs.Paginacion;
-using Bombones2026.Servicios.DTOs.Provincia;
+using BombonesApp2026.Datos;
 using BombonesApp2026.Datos.Interfaces;
-using BombonesApp2026.Datos.Repositorios;
 using BombonesApp2026.Entidades.Entidades;
 using BombonesApp2026.Entidades.Enum;
 using BombonesApp2026.Servicios.DTOs.Bombon;
@@ -13,9 +12,11 @@ namespace BombonesApp2026.Servicios.Servicios
     public class BombonServicio : IBombonServicio
     {
         private readonly IBombonRepositorio _bombonRepositorio;
-        public BombonServicio(IBombonRepositorio bombonRepositorio)
+        private readonly IUnitOfWork _unitOfWork;
+        public BombonServicio(IBombonRepositorio bombonRepositorio, IUnitOfWork unitOfWork)
         {
-            _bombonRepositorio = bombonRepositorio;
+            _bombonRepositorio = bombonRepositorio ?? throw new ArgumentNullException(nameof(bombonRepositorio));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
         public ResultadoPaginacionDto<BombonListDto> ObtenerPagina(int paginaActual,
             int cantidadPorPagina, bool? filtroActivo = null, string? textoBuscar = null)
@@ -34,17 +35,26 @@ namespace BombonesApp2026.Servicios.Servicios
                     PaginaActual = paginaActual
                 };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                throw new Exception("Error al obtener la página de bombones.", ex);
             }
         }
 
         public List<BombonListDto> ObtenerTodos()
         {
-            return _bombonRepositorio.ObtenerTodos()
-                .Select(b => b.ToListDto()).ToList();
+            try
+            {
+                return _bombonRepositorio.ObtenerTodos()
+            .Select(b => b.ToListDto()).ToList();
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error al obtener el listado completo de bombones.", ex);
+            }
         }
         public int Agregar(BombonCreateDto bombonDto)
         {
@@ -56,6 +66,7 @@ namespace BombonesApp2026.Servicios.Servicios
             try
             {
                 _bombonRepositorio.Agregar(bombon);
+                _unitOfWork.Commit();
                 return bombon.ProductoId;
             }
             catch (Exception ex)
@@ -81,6 +92,7 @@ namespace BombonesApp2026.Servicios.Servicios
             try
             {
                 _bombonRepositorio.Borrar(bombonId);
+                _unitOfWork.Commit();
             }
             catch (Exception ex)
             {
@@ -97,8 +109,17 @@ namespace BombonesApp2026.Servicios.Servicios
 
             Bombon? bombon = _bombonRepositorio.ObtenerPorId(bombonId);
             if (bombon is null) throw new ArgumentException(nameof(bombonId), $"Id {bombonId} no encontrado");
-            BombonEditDto bombonDto = bombon.ToEditDto();
-            return bombonDto;
+            try
+            {
+                BombonEditDto bombonDto = bombon.ToEditDto();
+                return bombonDto;
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error al obtener el bombón para editar.", ex);
+            }
         }
 
         public void Editar(BombonEditDto bombonDto)
@@ -111,43 +132,75 @@ namespace BombonesApp2026.Servicios.Servicios
             }
             Bombon bombon = bombonDto.ToEntidad();
             if (_bombonRepositorio.ExisteBombon(bombon)) throw new InvalidOperationException($"Ya existe una bombon {bombon.Nombre}");
-            _bombonRepositorio.Editar(bombon);
+            try
+            {
+                _bombonRepositorio.Editar(bombon, bombonDto.ProductoId);
+                _unitOfWork.Commit();
 
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al intentar actualizar el bombón con ID {bombon.ProductoId}.", ex);
+            }
         }
 
         public int ObtenerPaginaRegistro(string nombre, int cantidadPorPagina,
             bool? filtroActivo = null, string? textoBuscar = null)
         {
+            if (string.IsNullOrWhiteSpace(nombre))
+                throw new ArgumentException("El nombre no puede estar vacío.", nameof(nombre));
+
+            if (cantidadPorPagina <= 0) cantidadPorPagina = 10;
+
             int posicion = _bombonRepositorio
                 .ObtenerPosicionAlfabetica(nombre, filtroActivo, textoBuscar);
-            return (int)Math.Ceiling((double)posicion / cantidadPorPagina);
+
+            if (posicion <= 0) return 1;
+
+            try
+            {
+                return (int)Math.Ceiling((double)posicion / cantidadPorPagina);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"Error al obtener la página de registro para el bombón con nombre {nombre}: {ex.Message}", ex);
+            }
         }
 
         public List<BombonListDto> ObtenerDatosCombo(BombonDefault bombonDefault)
         {
-            var lista = _bombonRepositorio.ObtenerTodos()
-                    .Select(b=>b.ToListDto()).ToList();
-            if (bombonDefault == BombonDefault.Todos)
+            try
             {
-                var defaultBombon= new BombonListDto
+                var lista = _bombonRepositorio.ObtenerTodos()
+                .Select(b => b.ToListDto()).ToList();
+                if (bombonDefault == BombonDefault.Todos)
                 {
-                    ProductoId = 0,
-                    Nombre = "Todos"
-                };
-                lista.Insert(0, defaultBombon);
+                    var defaultBombon = new BombonListDto
+                    {
+                        ProductoId = 0,
+                        Nombre = "Todos"
+                    };
+                    lista.Insert(0, defaultBombon);
+
+                }
+                else
+                {
+                    var defaultBombon = new BombonListDto
+                    {
+                        ProductoId = 0,
+                        Nombre = "Seleccione"
+                    };
+                    lista.Insert(0, defaultBombon);
+                }
+                return lista;
 
             }
-            else
+            catch (Exception ex)
             {
-                var defaultBombon = new BombonListDto
-                {
-                    ProductoId = 0,
-                    Nombre = "Seleccione"
-                };
-                lista.Insert(0, defaultBombon);
+                throw new Exception($"Error al poblar los datos del combo de bombones: {ex.Message}", ex);
             }
-            return lista;
-
         }
     }
 

@@ -12,23 +12,26 @@ namespace Bombones2026.Servicios.Servicios
     {
         private readonly ITransporteRepositorio _transporteRepositorio;
         private readonly IUnitOfWork _unitOfWork;
-        public TransporteServicio(ITransporteRepositorio transporteRepositorio,
-            IUnitOfWork unitOfWork)
+
+        public TransporteServicio(ITransporteRepositorio transporteRepositorio, IUnitOfWork unitOfWork)
         {
-            _transporteRepositorio = transporteRepositorio;
-            _unitOfWork=unitOfWork;
+            _transporteRepositorio = transporteRepositorio ?? throw new ArgumentNullException(nameof(transporteRepositorio));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
+
         public ResultadoPaginacionDto<TransporteListDto> ObtenerPagina(int paginaActual,
-                int cantidadPorPagina, bool? filtroActivo = null,
-                int? provinciaIdFiltro = null,
-                string? textoBuscar = null)
+            int cantidadPorPagina, bool? filtroActivo = null,
+            int? provinciaIdFiltro = null, string? textoBuscar = null)
         {
             try
             {
                 var resultado = _transporteRepositorio.ObtenerPagina(paginaActual,
                     cantidadPorPagina, filtroActivo, provinciaIdFiltro, textoBuscar);
+
                 var listaDto = resultado.lista
-                    .Select(t=>t.ToListDto()).ToList();
+                    .Select(t => t.ToListDto())
+                    .ToList();
+
                 return new ResultadoPaginacionDto<TransporteListDto>
                 {
                     Items = listaDto,
@@ -39,8 +42,21 @@ namespace Bombones2026.Servicios.Servicios
             }
             catch (Exception ex)
             {
+                throw new Exception($"Error al intentar obtener la página de transportes: {ex.Message}", ex);
+            }
+        }
 
-                throw new Exception($"Error al intentar obtener la página {ex.Message}");
+        public List<TransporteListDto> ObtenerTodos()
+        {
+            try
+            {
+                return _transporteRepositorio.ObtenerTodos()
+                    .Select(t => t.ToListDto())
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al obtener la lista completa de transportes: {ex.Message}", ex);
             }
         }
 
@@ -52,22 +68,24 @@ namespace Bombones2026.Servicios.Servicios
             }
             if (string.IsNullOrWhiteSpace(transporteDto.NombreEmpresa))
             {
-                throw new ArgumentNullException(nameof(transporteDto.NombreEmpresa), "El nombre es requerido");
+                throw new ArgumentException("El nombre de la empresa es requerido", nameof(transporteDto.NombreEmpresa));
             }
             if (string.IsNullOrWhiteSpace(transporteDto.Telefono))
             {
-                throw new ArgumentNullException(nameof(transporteDto.Telefono), "El teléfono es requerido");
+                throw new ArgumentException("El teléfono es requerido", nameof(transporteDto.Telefono));
             }
             if (string.IsNullOrWhiteSpace(transporteDto.Email))
             {
-                throw new ArgumentNullException(nameof(transporteDto.Email), "El Email es requerido");
+                throw new ArgumentException("El Email es requerido", nameof(transporteDto.Email));
             }
 
             Transporte transporte = transporteDto.ToEntidad();
+
             if (_transporteRepositorio.ExisteTransporte(transporte))
             {
-                throw new InvalidOperationException($"Ya existe un transporte {transporte.NombreEmpresa}");
+                throw new InvalidOperationException($"Ya existe un transporte registrado como '{transporte.NombreEmpresa}'");
             }
+
             try
             {
                 _transporteRepositorio.Agregar(transporte);
@@ -76,26 +94,28 @@ namespace Bombones2026.Servicios.Servicios
             }
             catch (Exception ex)
             {
-
-                throw new Exception($"Error al intentar agregar un transporte: {ex.Message}");
+                throw new Exception($"Error al intentar agregar el transporte '{transporteDto.NombreEmpresa}': {ex.Message}", ex);
             }
         }
 
         public void Borrar(int transporteId)
         {
             if (transporteId <= 0)
-                throw new ArgumentException("El ID del tipo de bombón debe ser un entero mayor a cero.", nameof(transporteId));
+            {
+                throw new ArgumentException("El ID del transporte debe ser un entero mayor a cero.", nameof(transporteId));
+            }
+
             var transporteInDb = _transporteRepositorio.ObtenerPorId(transporteId);
             if (transporteInDb is null)
             {
                 throw new KeyNotFoundException($"No se puede borrar. No existe ningún transporte con el ID {transporteId}.");
             }
 
-            // AJUSTE: Se cambia Exception genérica por InvalidOperationException
             if (_transporteRepositorio.TieneRegistrosRelacionados(transporteId))
             {
-                throw new InvalidOperationException($"No se puede eliminar el tipo de bombón (ID: {transporteId}) porque tiene registros relacionados en el sistema.");
+                throw new InvalidOperationException($"No se puede eliminar el transporte (ID: {transporteId}) porque tiene registros relacionados en el sistema.");
             }
+
             try
             {
                 _transporteRepositorio.Borrar(transporteId);
@@ -103,8 +123,7 @@ namespace Bombones2026.Servicios.Servicios
             }
             catch (Exception ex)
             {
-
-                throw new Exception($"Error al intentar borrar un transporte: {ex.Message}");
+                throw new Exception($"Error al intentar borrar el transporte con ID {transporteId}: {ex.Message}", ex);
             }
         }
 
@@ -114,23 +133,36 @@ namespace Bombones2026.Servicios.Servicios
             {
                 throw new ArgumentNullException(nameof(transporteDto), "El transporte no puede ser nulo");
             }
+            if (transporteDto.TransporteId <= 0)
+            {
+                throw new ArgumentException("El ID del transporte no es válido.", nameof(transporteDto.TransporteId));
+            }
             if (string.IsNullOrWhiteSpace(transporteDto.NombreEmpresa))
             {
-                throw new ArgumentNullException(nameof(transporteDto.NombreEmpresa), "El nombre es requerido");
+                throw new ArgumentException("El nombre de la empresa es requerido", nameof(transporteDto.NombreEmpresa));
             }
             if (string.IsNullOrWhiteSpace(transporteDto.Telefono))
             {
-                throw new ArgumentNullException(nameof(transporteDto.Telefono), "El teléfono es requerido");
+                throw new ArgumentException("El teléfono es requerido", nameof(transporteDto.Telefono));
             }
             if (string.IsNullOrWhiteSpace(transporteDto.Email))
             {
-                throw new ArgumentNullException(nameof(transporteDto.Email), "El Email es requerido");
+                throw new ArgumentException("El Email es requerido", nameof(transporteDto.Email));
             }
+
+            var transporteInDb = _transporteRepositorio.ObtenerPorId(transporteDto.TransporteId);
+            if (transporteInDb is null)
+            {
+                throw new KeyNotFoundException($"No existe ningún transporte con el ID {transporteDto.TransporteId}.");
+            }
+
             Transporte transporte = transporteDto.ToEntidad();
+
             if (_transporteRepositorio.ExisteTransporte(transporte))
             {
-                throw new InvalidOperationException($"Ya existe un transporte {transporte.NombreEmpresa}");
+                throw new InvalidOperationException($"Ya existe otro transporte con el nombre '{transporte.NombreEmpresa}'");
             }
+
             try
             {
                 _transporteRepositorio.Editar(transporte, transporte.TransporteId);
@@ -138,48 +170,58 @@ namespace Bombones2026.Servicios.Servicios
             }
             catch (Exception ex)
             {
-
-                throw new Exception($"Error al intentar editar un transporte: {ex.Message}");
+                throw new Exception($"Error al intentar editar el transporte con ID {transporteDto.TransporteId}: {ex.Message}", ex);
             }
         }
 
-        public TransporteEditDto? ObtenerParaEditar(int transporteId)
+        public TransporteEditDto ObtenerParaEditar(int transporteId)
         {
+            if (transporteId <= 0)
+            {
+                throw new ArgumentException("El ID del transporte debe ser un entero mayor a cero.", nameof(transporteId));
+            }
+
             try
             {
-                // AJUSTE: Validación defensiva del ID antes de operar
-                if (transporteId <= 0)
-                    throw new ArgumentException("El ID del transporte debe ser un entero mayor a cero.", nameof(transporteId));
-
-
                 Transporte? transporte = _transporteRepositorio.ObtenerPorId(transporteId);
-                if (transporte is null) throw new ArgumentException(nameof(transporteId), $"Id {transporteId} no encontrado");
-                TransporteEditDto transporteDto = transporte.ToEditDto();
-                return transporteDto;
+                if (transporte is null)
+                {
+                    throw new KeyNotFoundException($"No se encontró el transporte con ID {transporteId}");
+                }
 
+                return transporte.ToEditDto();
+            }
+            catch (KeyNotFoundException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
-
-                throw new Exception($"Error al intentar obtener un transporte: {ex.Message}");
+                throw new Exception($"Error al intentar obtener el transporte con ID {transporteId} para edición: {ex.Message}", ex);
             }
         }
 
-        public List<TransporteListDto> ObtenerTodos()
-        {
-            return _transporteRepositorio.ObtenerTodos()
-                .Select(t =>t.ToListDto()).ToList();
-        }
-
         public int ObtenerPaginaRegistro(string nombre, int cantidadPorPagina,
-            bool? filtroActivo = null, int? provinciaIdFiltro = null,
-            string? textoBuscar = null)
+            bool? filtroActivo = null, int? provinciaIdFiltro = null, string? textoBuscar = null)
         {
-            int posicion = _transporteRepositorio
-                .ObtenerPosicionAlfabetica(nombre, filtroActivo,
-                provinciaIdFiltro,
-                textoBuscar);
-            return (int)Math.Ceiling((double)posicion / cantidadPorPagina);
+            if (string.IsNullOrWhiteSpace(nombre))
+            {
+                throw new ArgumentException("El nombre es requerido para calcular la página del registro.", nameof(nombre));
+            }
+            if (cantidadPorPagina <= 0)
+            {
+                throw new ArgumentException("La cantidad por página debe ser mayor a cero.", nameof(cantidadPorPagina));
+            }
+
+            try
+            {
+                int posicion = _transporteRepositorio.ObtenerPosicionAlfabetica(nombre, filtroActivo, provinciaIdFiltro, textoBuscar);
+                return (int)Math.Ceiling((double)posicion / cantidadPorPagina);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al obtener la página del transporte '{nombre}': {ex.Message}", ex);
+            }
         }
     }
 }

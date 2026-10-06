@@ -1,18 +1,22 @@
 ﻿using Bombones2026.Servicios.DTOs.Paginacion;
 using Bombones2026.Servicios.DTOs.Provincia;
+using BombonesApp2026.Datos;
 using BombonesApp2026.Datos.Interfaces;
 using BombonesApp2026.Entidades.Entidades;
 using BombonesApp2026.Entidades.Enum;
 using BombonesApp2026.Servicios.Interfaces;
+using BombonesApp2026.Servicios.Mapeadores;
 
 namespace Bombones2026.Servicios.Servicios
 {
     public class ProvinciaServicio : IProvinciaServicio
     {
         private readonly IProvinciaRepositorio _provinciaRepositorio;
-        public ProvinciaServicio(IProvinciaRepositorio provinciaRepositorio)
+        private readonly IUnitOfWork _unitOfWork;
+        public ProvinciaServicio(IProvinciaRepositorio provinciaRepositorio, IUnitOfWork unitOfWork)
         {
             _provinciaRepositorio = provinciaRepositorio;
+            _unitOfWork = unitOfWork;
         }
 
         public ResultadoPaginacionDto<ProvinciaListDto> ObtenerPagina(int paginaActual,
@@ -23,11 +27,7 @@ namespace Bombones2026.Servicios.Servicios
                 var resultado = _provinciaRepositorio.ObtenerPagina(paginaActual,
                     cantidadPorPagina, filtroActivo, textoBuscar);
                 var listaDto = resultado.lista
-                .Select(p => new ProvinciaListDto
-                {
-                    ProvinciaId = p.ProvinciaId,
-                    Nombre = p.NombreProvincia,
-                }).ToList();
+                .Select(p => p.ToListDto()).ToList();
                 return new ResultadoPaginacionDto<ProvinciaListDto>
                 {
                     Items = listaDto,
@@ -36,21 +36,25 @@ namespace Bombones2026.Servicios.Servicios
                     PaginaActual = paginaActual
                 };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                throw new Exception($"Error al intentar obtener la página de provincias: {ex.Message}", ex);
             }
         }
 
         public List<ProvinciaListDto> ObtenerTodos()
         {
-            return _provinciaRepositorio.ObtenerTodos()
-                .Select(p => new ProvinciaListDto
-                {
-                    ProvinciaId = p.ProvinciaId,
-                    Nombre = p.NombreProvincia,
-                }).ToList();
+            try
+            {
+                return _provinciaRepositorio.ObtenerTodos()
+            .Select(p => p.ToListDto()).ToList();
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"Error al obtener la lista completa de provincias: {ex.Message}", ex);
+            }
         }
         public int Agregar(ProvinciaCreateDto? provinciaDto)
         {
@@ -66,6 +70,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _provinciaRepositorio.Agregar(provincia);
+                _unitOfWork.Commit();
                 return provincia.ProvinciaId;
             }
             catch (Exception ex)
@@ -92,7 +97,15 @@ namespace Bombones2026.Servicios.Servicios
             {
                 throw new InvalidOperationException($"No se puede eliminar la provincia (ID: {provinciaId}) porque tiene registros relacionados en el sistema.");
             }
-            _provinciaRepositorio.Borrar(provinciaId);
+            try
+            {
+                _provinciaRepositorio.Borrar(provinciaId);
+                _unitOfWork.Commit();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al intentar borrar la provincia con ID {provinciaId}: {ex.Message}", ex);
+            }
         }
 
         public void Editar(ProvinciaEditDto? provinciaDto)
@@ -107,7 +120,17 @@ namespace Bombones2026.Servicios.Servicios
                 NombreProvincia = provinciaDto.Nombre
             };
             if (_provinciaRepositorio.ExisteProvincia(provincia)) throw new InvalidOperationException($"Ya existe una Provincia {provincia.NombreProvincia}");
-            _provinciaRepositorio.Editar(provincia);
+            try
+            {
+                _provinciaRepositorio.Editar(provincia);
+                _unitOfWork.Commit();
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"Error al intentar editar la provincia con ID {provinciaDto.ProvinciaId}: {ex.Message}", ex);
+            }
         }
         public ProvinciaEditDto ObtenerParaEditar(int id)
         {
@@ -118,51 +141,77 @@ namespace Bombones2026.Servicios.Servicios
 
             Provincia? provincia = _provinciaRepositorio.ObtenerPorId(id);
             if (provincia is null) throw new ArgumentException(nameof(id), $"Id {id} no encontrado");
-            ProvinciaEditDto provinciaDto = new ProvinciaEditDto
+            try
             {
-                ProvinciaId = provincia.ProvinciaId,
-                Nombre = provincia.NombreProvincia
-            };
-            return provinciaDto;
-        }
+                ProvinciaEditDto provinciaDto = provincia.ToEditDto();
+                return provinciaDto;
 
+            }
+            catch (KeyNotFoundException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al intentar obtener la provincia con ID {id} para edición: {ex.Message}", ex);
+            }
+        }
         public int ObtenerPaginaRegistro(string nombre, int cantidadPorPagina,
             bool? filtroActivo = null, string? textoBuscar = null)
         {
-            int posicion = _provinciaRepositorio
-                .ObtenerPosicionAlfabetica(nombre, filtroActivo, textoBuscar);
-            return (int)Math.Ceiling((double)posicion / cantidadPorPagina);
+            if (string.IsNullOrWhiteSpace(nombre))
+            {
+                throw new ArgumentException("El nombre es requerido para calcular la página del registro.", nameof(nombre));
+            }
+            if (cantidadPorPagina <= 0)
+            {
+                throw new ArgumentException("La cantidad por página debe ser mayor a cero.", nameof(cantidadPorPagina));
+            }
+
+            try
+            {
+                int posicion = _provinciaRepositorio.ObtenerPosicionAlfabetica(nombre, filtroActivo, textoBuscar);
+                return (int)Math.Ceiling((double)posicion / cantidadPorPagina);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al obtener la página de la provincia '{nombre}': {ex.Message}", ex);
+            }
         }
 
         public List<ProvinciaListDto> ObtenerDatosCombo(TipoProvinciaDefault tipoDefault)
         {
-            var lista = _provinciaRepositorio.ObtenerTodos()
-                .Select(p => new ProvinciaListDto
-                {
-                    ProvinciaId = p.ProvinciaId,
-                    Nombre = p.NombreProvincia
-                }).ToList();
-            if (tipoDefault == TipoProvinciaDefault.Todas)
+            try
             {
-                var defaultProvincia = new ProvinciaListDto
+                var lista = _provinciaRepositorio.ObtenerTodos()
+            .Select(p => p.ToListDto())
+            .ToList();
+                if (tipoDefault == TipoProvinciaDefault.Todas)
                 {
-                    ProvinciaId = 0,
-                    Nombre = "Todas"
-                };
-                lista.Insert(0, defaultProvincia);
+                    var defaultProvincia = new ProvinciaListDto
+                    {
+                        ProvinciaId = 0,
+                        Nombre = "Todas"
+                    };
+                    lista.Insert(0, defaultProvincia);
+
+                }
+                else
+                {
+                    var defaultProvincia = new ProvinciaListDto
+                    {
+                        ProvinciaId = 0,
+                        Nombre = "Seleccione"
+                    };
+                    lista.Insert(0, defaultProvincia);
+                }
+                return lista;
 
             }
-            else
+            catch (Exception ex)
             {
-                var defaultProvincia = new ProvinciaListDto
-                {
-                    ProvinciaId = 0,
-                    Nombre = "Seleccione"
-                };
-                lista.Insert(0, defaultProvincia);
+                throw new Exception($"Error al poblar los datos del combo de provincias: {ex.Message}", ex);
             }
-            return lista;
         }
     }
-
 }

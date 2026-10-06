@@ -68,5 +68,10 @@ namespace BombonesApp2026.Datos.Repositorios
                 .Any(c => c.Documento == cliente.Documento 
                 && c.ClienteId!=cliente.ClienteId);
         }
+
+        public bool EstaRelacionado(int clienteId)
+        {
+            return false; // Implementar la lógica para verificar si el cliente está relacionado con otras entidades
+        }
     }
 }

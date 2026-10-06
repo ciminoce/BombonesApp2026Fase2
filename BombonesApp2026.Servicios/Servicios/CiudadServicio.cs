@@ -1,18 +1,22 @@
 ﻿using Bombones2026.Servicios.DTOs.Ciudad;
 using Bombones2026.Servicios.DTOs.Paginacion;
+using BombonesApp2026.Datos;
 using BombonesApp2026.Datos.Interfaces;
 using BombonesApp2026.Entidades.Entidades;
 using BombonesApp2026.Entidades.Enum;
 using BombonesApp2026.Servicios.Interfaces;
+using BombonesApp2026.Servicios.Mapeadores;
 
 namespace Bombones2026.Servicios.Servicios
 {
     public class CiudadServicio : ICiudadServicio
     {
         private readonly ICiudadRepositorio _ciudadRepositorio;
-        public CiudadServicio(ICiudadRepositorio ciudadRepositorio)
+        private readonly IUnitOfWork _unitOfWork;
+        public CiudadServicio(ICiudadRepositorio ciudadRepositorio, IUnitOfWork unitOfWork)
         {
-            _ciudadRepositorio = ciudadRepositorio;
+            _ciudadRepositorio = ciudadRepositorio ?? throw new ArgumentNullException(nameof(ciudadRepositorio));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public ResultadoPaginacionDto<CiudadListDto> ObtenerPagina(int paginaActual,
@@ -23,12 +27,7 @@ namespace Bombones2026.Servicios.Servicios
                 var resultado = _ciudadRepositorio.ObtenerPagina(paginaActual,
                     cantidadPorPagina, filtroActivo, textoBuscar);
                 var listaDto = resultado.lista
-                        .Select(c => new CiudadListDto
-                        {
-                            CiudadId = c.CiudadId,
-                            Ciudad = c.Nombre,
-                            Provincia = c.Provincia!.NombreProvincia
-                        }).ToList();
+                        .Select(c => c.ToListDto()).ToList();
                 return new ResultadoPaginacionDto<CiudadListDto>
                 {
                     Items = listaDto,
@@ -37,30 +36,30 @@ namespace Bombones2026.Servicios.Servicios
                     PaginaActual = paginaActual
                 };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                throw new Exception("Error al obtener la página de ciudades.", ex);
             }
         }
 
         public List<CiudadListDto> ObtenerTodos()
         {
-            return _ciudadRepositorio.ObtenerTodos()
-                .Select(c => new CiudadListDto
-                {
-                    CiudadId = c.CiudadId,
-                    Ciudad = c.Nombre,
-                    Provincia = c.Provincia!.NombreProvincia
-                }).ToList();
+            try
+            {
+                return _ciudadRepositorio.ObtenerTodos()
+            .Select(c => c.ToListDto()).ToList();
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error al obtener el listado completo de ciudades.", ex);
+            }
         }
         public int Agregar(CiudadCreateDto ciudadDto)
         {
-            Ciudad ciudad = new Ciudad
-            {
-                Nombre = ciudadDto.Nombre,
-                ProvinciaId = ciudadDto.ProvinciaId,
-            };
+            Ciudad ciudad = ciudadDto.ToEntidad();
             if (_ciudadRepositorio.ExisteCiudad(ciudad))
             {
                 throw new ArgumentException(nameof(ciudad), $"Ya existe una ciudad con el nombre {ciudad.Nombre}\n en esa provincia");
@@ -68,6 +67,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _ciudadRepositorio.Agregar(ciudad);
+                _unitOfWork.Commit();
                 return ciudad.CiudadId;
             }
             catch (Exception ex)
@@ -89,10 +89,14 @@ namespace Bombones2026.Servicios.Servicios
             {
                 throw new KeyNotFoundException($"No se encontró una ciudad con el ID {ciudadId}");
             }
-            //OJO falta ver si el registro está relacionado
+            if (ciudad.EstaRelacionada(ciudad.CiudadId))
+            {
+                throw new InvalidOperationException($"No se puede borrar la ciudad {ciudad.Nombre} porque tiene clientes asociados.");
+            }
             try
             {
                 _ciudadRepositorio.Borrar(ciudadId);
+                _unitOfWork.Commit();
             }
             catch (Exception ex)
             {
@@ -109,13 +113,20 @@ namespace Bombones2026.Servicios.Servicios
 
             Ciudad? ciudad = _ciudadRepositorio.ObtenerPorId(ciudadId);
             if (ciudad is null) throw new ArgumentException(nameof(ciudadId), $"Id {ciudadId} no encontrado");
-            CiudadEditDto ciudadDto = new CiudadEditDto
+            try
             {
-                CiudadId = ciudad.CiudadId,
-                Nombre = ciudad.Nombre,
-                ProvinciaId = ciudad.ProvinciaId
-            };
-            return ciudadDto;
+                CiudadEditDto ciudadDto = ciudad.ToEditDto();
+                return ciudadDto;
+
+            }
+            catch (KeyNotFoundException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al obtener la ciudad con ID {ciudadId} para edición: {ex.Message}", ex);
+            }
         }
 
         public void Editar(CiudadEditDto ciudadDto)
@@ -128,53 +139,77 @@ namespace Bombones2026.Servicios.Servicios
             {
                 throw new ArgumentException(nameof(ciudadDto.ProvinciaId), "El ID de la provincia debe ser mayor a 0");
             }
-            Ciudad ciudad = new Ciudad
-            {
-                CiudadId = ciudadDto.CiudadId,
-                Nombre = ciudadDto.Nombre,
-                ProvinciaId = ciudadDto.ProvinciaId
-            };
+            Ciudad ciudad = ciudadDto.ToEntidad();
             if (_ciudadRepositorio.ExisteCiudad(ciudad)) throw new InvalidOperationException($"Ya existe una ciudad {ciudad.Nombre}");
-            _ciudadRepositorio.Editar(ciudad);
+            try
+            {
+                _ciudadRepositorio.Editar(ciudad);
+                _unitOfWork.Commit();
 
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al intentar actualizar la ciudad con ID {ciudad.CiudadId}.", ex);
+            }
         }
 
         public int ObtenerPaginaRegistro(string nombre, int cantidadPorPagina,
             bool? filtroActivo = null, string? textoBuscar = null)
         {
+            if (string.IsNullOrWhiteSpace(nombre))
+                throw new ArgumentException("El nombre no puede estar vacío.", nameof(nombre));
+
+            if (cantidadPorPagina <= 0) cantidadPorPagina = 10;
+
             int posicion = _ciudadRepositorio
                 .ObtenerPosicionAlfabetica(nombre, filtroActivo, textoBuscar);
-            return (int)Math.Ceiling((double)posicion / cantidadPorPagina);
+
+            if (posicion <= 0) return 1;
+
+            try
+            {
+                return (int)Math.Ceiling((double)posicion / cantidadPorPagina);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"Error al obtener la página de registro para la ciudad '{nombre}': {ex.Message}", ex);
+            }
         }
 
         public List<CiudadListDto> ObtenerDatosCombo(TipoCiudadDefault tipoDefault, int provinciaId)
         {
-            var lista = _ciudadRepositorio.ObtenerTodos(provinciaId)
-                .Select(c => new CiudadListDto
-                {
-                    CiudadId = c.CiudadId,
-                    Ciudad = c.Nombre,
-                }).ToList();
-            if (tipoDefault == TipoCiudadDefault.Todas)
+            try
             {
-                var defaultCiudad = new CiudadListDto
+                var lista = _ciudadRepositorio.ObtenerTodos(provinciaId)
+                        .Select(c => c.ToListDto()).ToList();
+                if (tipoDefault == TipoCiudadDefault.Todas)
                 {
-                    CiudadId = 0,
-                    Ciudad = "Todas"
-                };
-                lista.Insert(0, defaultCiudad);
+                    var defaultCiudad = new CiudadListDto
+                    {
+                        CiudadId = 0,
+                        Ciudad = "Todas"
+                    };
+                    lista.Insert(0, defaultCiudad);
+
+                }
+                else
+                {
+                    var defaultCiudad = new CiudadListDto
+                    {
+                        CiudadId = 0,
+                        Ciudad = "Seleccione"
+                    };
+                    lista.Insert(0, defaultCiudad);
+                }
+                return lista;
 
             }
-            else
+            catch (Exception ex)
             {
-                var defaultCiudad = new CiudadListDto
-                {
-                    CiudadId = 0,
-                    Ciudad = "Seleccione"
-                };
-                lista.Insert(0, defaultCiudad);
+                throw new Exception($"Error al poblar los datos del combo de ciudades: {ex.Message}", ex);
             }
-            return lista;
         }
     }
 }
