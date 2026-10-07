@@ -143,7 +143,7 @@ namespace Bombones2026.Servicios.Servicios
             if (_ciudadRepositorio.ExisteCiudad(ciudad)) throw new InvalidOperationException($"Ya existe una ciudad {ciudad.Nombre}");
             try
             {
-                _ciudadRepositorio.Editar(ciudad);
+                _ciudadRepositorio.Editar(ciudad, ciudad.CiudadId);
                 _unitOfWork.Guardar();
 
             }
