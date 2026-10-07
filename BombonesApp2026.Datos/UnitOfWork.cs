@@ -9,7 +9,7 @@
             _context = context;
         }
 
-        public void Commit()
+        public void Guardar()
         {
             _context.SaveChanges();
         }

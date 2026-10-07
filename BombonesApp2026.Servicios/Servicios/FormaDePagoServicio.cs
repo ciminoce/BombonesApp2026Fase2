@@ -80,7 +80,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _formasDePagoRepositorio.Agregar(formaDePago);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
                 return formaDePago.FormaDePagoId;
             }
             catch (Exception ex)
@@ -110,7 +110,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _formasDePagoRepositorio.Borrar(formaDePagoId);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
             }
             catch (Exception ex)
             {
@@ -149,7 +149,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _formasDePagoRepositorio.Editar(formaDePago, formaDePago.FormaDePagoId);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
             }
             catch (Exception ex)
             {

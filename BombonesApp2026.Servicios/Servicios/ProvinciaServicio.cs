@@ -70,7 +70,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _provinciaRepositorio.Agregar(provincia);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
                 return provincia.ProvinciaId;
             }
             catch (Exception ex)
@@ -100,7 +100,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _provinciaRepositorio.Borrar(provinciaId);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
             }
             catch (Exception ex)
             {
@@ -123,7 +123,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _provinciaRepositorio.Editar(provincia);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
 
             }
             catch (Exception ex)

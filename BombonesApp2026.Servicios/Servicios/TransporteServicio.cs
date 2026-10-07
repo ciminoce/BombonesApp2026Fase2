@@ -89,7 +89,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _transporteRepositorio.Agregar(transporte);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
                 return transporte.TransporteId;
             }
             catch (Exception ex)
@@ -119,7 +119,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _transporteRepositorio.Borrar(transporteId);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
             }
             catch (Exception ex)
             {
@@ -166,7 +166,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _transporteRepositorio.Editar(transporte, transporte.TransporteId);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
             }
             catch (Exception ex)
             {

@@ -59,7 +59,7 @@ namespace BombonesApp2026.Windows
 
             ITipoBombonServicio tipoBombonServicio = new TipoBombonServicio(tipoBombonRepositorio,unitOfWork);
             IFormaDePagoServicio formaDePagoServicio = new FormaDePagoServicio(formaDePagoRepositorio,unitOfWork);
-            IRolServicio rolServicio = new RolServicio(rolRepositorio);
+            IRolServicio rolServicio = new RolServicio(rolRepositorio,unitOfWork);
             IProvinciaServicio provinciaServicio = new ProvinciaServicio(provinciaRepositorio, unitOfWork);
             ICiudadServicio ciudadServicio = new CiudadServicio(ciudadRepositorio,unitOfWork);
             ITransporteServicio transporteServicio = new TransporteServicio(transporteRepositorio,unitOfWork);

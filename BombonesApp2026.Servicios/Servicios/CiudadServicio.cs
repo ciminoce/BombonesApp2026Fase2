@@ -67,7 +67,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _ciudadRepositorio.Agregar(ciudad);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
                 return ciudad.CiudadId;
             }
             catch (Exception ex)
@@ -96,7 +96,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _ciudadRepositorio.Borrar(ciudadId);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
             }
             catch (Exception ex)
             {
@@ -144,7 +144,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _ciudadRepositorio.Editar(ciudad);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
 
             }
             catch (Exception ex)

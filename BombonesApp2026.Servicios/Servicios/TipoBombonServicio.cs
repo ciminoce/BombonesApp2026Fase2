@@ -81,7 +81,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _tipoBombonRepositorio.Agregar(tipo);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
                 return tipo.TipoBombonId;
             }
             catch (Exception ex)
@@ -111,7 +111,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _tipoBombonRepositorio.Borrar(tipoBombonId);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
             }
             catch (Exception ex)
             {
@@ -150,7 +150,7 @@ namespace Bombones2026.Servicios.Servicios
             try
             {
                 _tipoBombonRepositorio.Editar(tipo, tipo.TipoBombonId);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
             }
             catch (Exception ex)
             {

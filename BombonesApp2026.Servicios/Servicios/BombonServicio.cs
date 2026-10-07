@@ -66,7 +66,7 @@ namespace BombonesApp2026.Servicios.Servicios
             try
             {
                 _bombonRepositorio.Agregar(bombon);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
                 return bombon.ProductoId;
             }
             catch (Exception ex)
@@ -92,7 +92,7 @@ namespace BombonesApp2026.Servicios.Servicios
             try
             {
                 _bombonRepositorio.Borrar(bombonId);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
             }
             catch (Exception ex)
             {
@@ -135,7 +135,7 @@ namespace BombonesApp2026.Servicios.Servicios
             try
             {
                 _bombonRepositorio.Editar(bombon, bombonDto.ProductoId);
-                _unitOfWork.Commit();
+                _unitOfWork.Guardar();
 
             }
             catch (Exception ex)
