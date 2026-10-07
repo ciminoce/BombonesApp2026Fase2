@@ -45,14 +45,15 @@
             panel1 = new Panel();
             splitContainer1 = new SplitContainer();
             dgvDatos = new DataGridView();
-            btnEditarBombon = new Button();
-            btnBorrarBombon = new Button();
-            btnAgregarBombon = new Button();
-            chkEsSurtida = new CheckBox();
-            txtCantidadBombones = new TextBox();
             colId = new DataGridViewTextBoxColumn();
             colBombon = new DataGridViewTextBoxColumn();
             colCantidad = new DataGridViewTextBoxColumn();
+            btnEditarBombon = new Button();
+            btnBorrarBombon = new Button();
+            btnAgregarBombon = new Button();
+            txtCantidadBombones = new TextBox();
+            label1 = new Label();
+            txtSurtida = new TextBox();
             ((System.ComponentModel.ISupportInitialize)nudStock).BeginInit();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             panel1.SuspendLayout();
@@ -170,7 +171,6 @@
             // label6
             // 
             label6.AutoSize = true;
-            label6.Enabled = false;
             label6.Location = new Point(20, 431);
             label6.Name = "label6";
             label6.Size = new Size(98, 15);
@@ -221,6 +221,31 @@
             dgvDatos.Size = new Size(574, 225);
             dgvDatos.TabIndex = 0;
             // 
+            // colId
+            // 
+            colId.DataPropertyName = "BombonId";
+            colId.HeaderText = "Id";
+            colId.Name = "colId";
+            colId.ReadOnly = true;
+            colId.Visible = false;
+            // 
+            // colBombon
+            // 
+            colBombon.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            colBombon.DataPropertyName = "NombreBombon";
+            colBombon.HeaderText = "Bombón";
+            colBombon.Name = "colBombon";
+            colBombon.ReadOnly = true;
+            // 
+            // colCantidad
+            // 
+            colCantidad.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colCantidad.DataPropertyName = "Cantidad";
+            colCantidad.HeaderText = "Cantidad";
+            colCantidad.Name = "colCantidad";
+            colCantidad.ReadOnly = true;
+            colCantidad.Width = 80;
+            // 
             // btnEditarBombon
             // 
             btnEditarBombon.Image = Properties.Resources.edit_property_24px;
@@ -255,18 +280,6 @@
             btnAgregarBombon.UseVisualStyleBackColor = true;
             btnAgregarBombon.Click += btnAgregarBombon_Click;
             // 
-            // chkEsSurtida
-            // 
-            chkEsSurtida.AutoSize = true;
-            chkEsSurtida.CheckAlign = ContentAlignment.MiddleRight;
-            chkEsSurtida.Enabled = false;
-            chkEsSurtida.Location = new Point(21, 494);
-            chkEsSurtida.Name = "chkEsSurtida";
-            chkEsSurtida.Size = new Size(82, 19);
-            chkEsSurtida.TabIndex = 13;
-            chkEsSurtida.Text = "Es Surtida?";
-            chkEsSurtida.UseVisualStyleBackColor = true;
-            // 
             // txtCantidadBombones
             // 
             txtCantidadBombones.Enabled = false;
@@ -276,30 +289,23 @@
             txtCantidadBombones.Size = new Size(134, 23);
             txtCantidadBombones.TabIndex = 8;
             // 
-            // colId
+            // label1
             // 
-            colId.DataPropertyName = "BombonId";
-            colId.HeaderText = "Id";
-            colId.Name = "colId";
-            colId.ReadOnly = true;
-            colId.Visible = false;
+            label1.AutoSize = true;
+            label1.Location = new Point(20, 490);
+            label1.Name = "label1";
+            label1.Size = new Size(47, 15);
+            label1.TabIndex = 6;
+            label1.Text = "Surtida:";
             // 
-            // colBombon
+            // txtSurtida
             // 
-            colBombon.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            colBombon.DataPropertyName = "NombreBombon";
-            colBombon.HeaderText = "Bombón";
-            colBombon.Name = "colBombon";
-            colBombon.ReadOnly = true;
-            // 
-            // colCantidad
-            // 
-            colCantidad.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            colCantidad.DataPropertyName = "Cantidad";
-            colCantidad.HeaderText = "Cantidad";
-            colCantidad.Name = "colCantidad";
-            colCantidad.ReadOnly = true;
-            colCantidad.Width = 80;
+            txtSurtida.Enabled = false;
+            txtSurtida.Location = new Point(129, 485);
+            txtSurtida.MaxLength = 100;
+            txtSurtida.Name = "txtSurtida";
+            txtSurtida.Size = new Size(134, 23);
+            txtSurtida.TabIndex = 8;
             // 
             // frmCajaAe
             // 
@@ -307,7 +313,6 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(794, 640);
             Controls.Add(panel1);
-            Controls.Add(chkEsSurtida);
             Controls.Add(chkActivo);
             Controls.Add(nudStock);
             Controls.Add(btnCancelar);
@@ -317,6 +322,8 @@
             Controls.Add(label3);
             Controls.Add(label5);
             Controls.Add(txtCantidadBombones);
+            Controls.Add(txtSurtida);
+            Controls.Add(label1);
             Controls.Add(txtPrecio);
             Controls.Add(label4);
             Controls.Add(txtNombreCaja);
@@ -357,10 +364,11 @@
         private Button btnBorrarBombon;
         private Button btnAgregarBombon;
         private Button btnEditarBombon;
-        private CheckBox chkEsSurtida;
         private TextBox txtCantidadBombones;
         private DataGridViewTextBoxColumn colId;
         private DataGridViewTextBoxColumn colBombon;
         private DataGridViewTextBoxColumn colCantidad;
+        private TextBox txtSurtida;
+        private Label label1;
     }
 }

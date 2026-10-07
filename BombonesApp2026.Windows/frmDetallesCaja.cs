@@ -21,7 +21,7 @@ namespace BombonesApp2026.Windows
             txtCantidadBombones.Text = _cajaDto.CantidadBombones.ToString();
             txtStock.Text = _cajaDto.Stock.ToString();
             chkActivo.Checked = _cajaDto.Activo;
-            chkEsSurtida.Checked = _cajaDto.EsSurtida;
+            txtSurtida.Text = _cajaDto.EsSurtida ? "Sí" : "No";
             _bindingSource.DataSource = _cajaDto.Detalles;
         }
         public void SetCaja(CajaDetailDto cajaDetailDto)

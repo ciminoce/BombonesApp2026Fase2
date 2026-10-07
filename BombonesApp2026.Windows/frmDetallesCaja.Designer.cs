@@ -45,9 +45,10 @@
             colId = new DataGridViewTextBoxColumn();
             colBombon = new DataGridViewTextBoxColumn();
             colCantidad = new DataGridViewTextBoxColumn();
-            chkEsSurtida = new CheckBox();
             txtStock = new TextBox();
             txtCantidadBombones = new TextBox();
+            label1 = new Label();
+            txtSurtida = new TextBox();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvDatos).BeginInit();
@@ -200,18 +201,6 @@
             colCantidad.ReadOnly = true;
             colCantidad.Width = 80;
             // 
-            // chkEsSurtida
-            // 
-            chkEsSurtida.AutoSize = true;
-            chkEsSurtida.CheckAlign = ContentAlignment.MiddleRight;
-            chkEsSurtida.Enabled = false;
-            chkEsSurtida.Location = new Point(24, 496);
-            chkEsSurtida.Name = "chkEsSurtida";
-            chkEsSurtida.Size = new Size(82, 19);
-            chkEsSurtida.TabIndex = 13;
-            chkEsSurtida.Text = "Es Surtida?";
-            chkEsSurtida.UseVisualStyleBackColor = true;
-            // 
             // txtStock
             // 
             txtStock.Enabled = false;
@@ -230,13 +219,30 @@
             txtCantidadBombones.Size = new Size(134, 23);
             txtCantidadBombones.TabIndex = 8;
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(20, 490);
+            label1.Name = "label1";
+            label1.Size = new Size(47, 15);
+            label1.TabIndex = 6;
+            label1.Text = "Surtida:";
+            // 
+            // txtSurtida
+            // 
+            txtSurtida.Enabled = false;
+            txtSurtida.Location = new Point(129, 485);
+            txtSurtida.MaxLength = 100;
+            txtSurtida.Name = "txtSurtida";
+            txtSurtida.Size = new Size(134, 23);
+            txtSurtida.TabIndex = 8;
+            // 
             // frmDetallesCaja
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(572, 640);
             Controls.Add(panel1);
-            Controls.Add(chkEsSurtida);
             Controls.Add(chkActivo);
             Controls.Add(btnCerrar);
             Controls.Add(txtDescripcion);
@@ -244,6 +250,8 @@
             Controls.Add(label3);
             Controls.Add(label5);
             Controls.Add(txtCantidadBombones);
+            Controls.Add(txtSurtida);
+            Controls.Add(label1);
             Controls.Add(txtPrecio);
             Controls.Add(label4);
             Controls.Add(txtStock);
@@ -272,12 +280,13 @@
         private Label label6;
         private ErrorProvider errorProvider1;
         private Panel panel1;
-        private CheckBox chkEsSurtida;
         private DataGridView dgvDatos;
         private TextBox txtCantidadBombones;
         private TextBox txtStock;
         private DataGridViewTextBoxColumn colId;
         private DataGridViewTextBoxColumn colBombon;
         private DataGridViewTextBoxColumn colCantidad;
+        private TextBox txtSurtida;
+        private Label label1;
     }
 }

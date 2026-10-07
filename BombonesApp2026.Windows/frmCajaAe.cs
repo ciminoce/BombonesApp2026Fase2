@@ -128,7 +128,7 @@ namespace BombonesApp2026.Windows
             }
             txtCantidadBombones.Text = resumen.Cantidad.ToString();
             txtPrecio.Text = resumen.Precio.ToString();
-            chkEsSurtida.Checked = resumen.EsSurtida;
+            txtSurtida.Text = resumen.EsSurtida?"Sí":"No";
         }
     }
 }
