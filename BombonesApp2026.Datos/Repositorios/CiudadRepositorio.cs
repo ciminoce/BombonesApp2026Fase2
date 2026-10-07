@@ -4,23 +4,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BombonesApp2026.Datos.Repositorios
 {
-    public class CiudadRepositorio : ICiudadRepositorio
+    public class CiudadRepositorio :Repositorio<Ciudad>, ICiudadRepositorio
     {
-        private readonly BombonesDbContext _context;
-        public CiudadRepositorio(BombonesDbContext context)
+        public CiudadRepositorio(BombonesDbContext context) : base(context)
         {
-            _context = context;
         }
+
         public List<Ciudad> ObtenerTodos(int? provinciaId = null)
         {
             return _context.Ciudades
                 .OrderBy(c => c.Nombre)
                 .Where(c => c.ProvinciaId == provinciaId)
+                .AsNoTracking()
                 .ToList();
         }
         public (List<Ciudad> lista, int cantidadRegistros) ObtenerPagina(int paginaActual,
-    int cantidadPorPagina, bool? filtroActivo = null,
-    string? textoBuscar = null)
+            int cantidadPorPagina, bool? filtroActivo = null,
+            string? textoBuscar = null)
         {
             IQueryable<Ciudad> query = _context
                 .Ciudades
@@ -51,11 +51,6 @@ namespace BombonesApp2026.Datos.Repositorios
                     .Compare(c.Nombre, nombre) <= 0);
         }
 
-        public void Agregar(Ciudad ciudad)
-        {
-            _context.Ciudades.Add(ciudad);
-            _context.SaveChanges();
-        }
 
         public bool ExisteCiudad(Ciudad ciudad)
         {
@@ -72,30 +67,14 @@ namespace BombonesApp2026.Datos.Repositorios
 
             }
         }
-        public void Borrar(int ciudadId)
-        {
-            var ciudadEnDb = _context.Ciudades.Find(ciudadId);
-            if (ciudadEnDb is null) throw new KeyNotFoundException($"No se encuentra una ciudad con ID: {ciudadId}");
-            _context.Ciudades.Remove(ciudadEnDb);
-            _context.SaveChanges();
-        }
 
-        public Ciudad? ObtenerPorId(int ciudadId)
+        public override Ciudad? ObtenerPorId(int ciudadId)
         {
             return _context.Ciudades
+                .Include(c=>c.Provincia)
+                .AsNoTracking()
                 .FirstOrDefault(c => c.CiudadId == ciudadId);
         }
 
-        public void Editar(Ciudad ciudad)
-        {
-            var ciudadEnDb = _context.Ciudades.Find(ciudad.CiudadId);
-
-            if (ciudadEnDb is null) throw new Exception("Ciudad no encontrada");
-            ciudadEnDb.Nombre = ciudad.Nombre;
-            ciudadEnDb.ProvinciaId = ciudad.ProvinciaId;
-
-            _context.SaveChanges();
-
-        }
     }
 }

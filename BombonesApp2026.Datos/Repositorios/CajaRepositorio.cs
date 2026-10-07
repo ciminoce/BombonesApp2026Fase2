@@ -58,6 +58,7 @@ namespace CajaesApp2026.Datos.Repositorios
             return _context.Cajas
                 .Include(c=>c.Detalles)
                 .ThenInclude(d=>d.Bombon)
+                .AsNoTracking()
                 .FirstOrDefault(b => b.ProductoId == ProductoId);
         }
 
@@ -65,6 +66,7 @@ namespace CajaesApp2026.Datos.Repositorios
         public override List<Caja> ObtenerTodos()
         {
             return _context.Cajas
+                .AsNoTracking()
                 .OrderBy(c => c.Nombre).ToList();
         }
     }

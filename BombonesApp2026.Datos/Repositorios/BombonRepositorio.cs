@@ -14,6 +14,7 @@ namespace BombonesApp2026.Datos.Repositorios
         {
             return _context.Bombones
                 .Include(b => b.TipoBombon)
+                .AsNoTracking()
                 .ToList();
         }
         public (List<Bombon> lista, int cantidadRegistros) ObtenerPagina(int paginaActual,
@@ -59,6 +60,7 @@ namespace BombonesApp2026.Datos.Repositorios
         public override Bombon? ObtenerPorId(int ProductoId)
         {
             return _context.Bombones
+                .AsNoTracking()
                 .FirstOrDefault(b => b.ProductoId == ProductoId);
         }
 
