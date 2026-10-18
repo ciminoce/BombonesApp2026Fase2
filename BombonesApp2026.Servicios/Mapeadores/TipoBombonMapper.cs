@@ -1,6 +1,5 @@
 ﻿using Bombones2026.Servicios.DTOs.TipoBombon;
 using BombonesApp2026.Entidades.Entidades;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace BombonesApp2026.Servicios.Mapeadores
 {
@@ -12,6 +11,7 @@ namespace BombonesApp2026.Servicios.Mapeadores
             {
                 TipoBombonId = tipo.TipoBombonId,
                 Nombre = tipo.Nombre,
+                Descripcion = tipo.Descripcion,
                 Activo = tipo.Activo,
             };
         }
