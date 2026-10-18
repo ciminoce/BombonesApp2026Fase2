@@ -1,7 +1,6 @@
 ﻿using Bombones2026.Servicios.DTOs.Paginacion;
 using BombonesApp2026.Servicios.DTOs.Caja;
 using BombonesApp2026.Servicios.Interfaces;
-using BombonesApp2026.Servicios.Servicios;
 
 namespace BombonesApp2026.Windows
 {
