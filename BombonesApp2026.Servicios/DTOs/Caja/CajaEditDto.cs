@@ -9,6 +9,6 @@ namespace BombonesApp2026.Servicios.DTOs.Caja
         public string? Descripcion { get; set; }
         public int Stock { get; set; }
         public bool Activo { get; set; }
-        public List<DetalleCajaCreateDto> Detalles { get; set; } = new();
+        public List<DetalleCajaListDto> Detalles { get; set; } = new();
     }
 }

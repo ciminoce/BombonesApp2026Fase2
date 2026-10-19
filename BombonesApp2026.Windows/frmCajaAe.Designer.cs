@@ -216,8 +216,10 @@
             dgvDatos.Columns.AddRange(new DataGridViewColumn[] { colId, colBombon, colCantidad });
             dgvDatos.Dock = DockStyle.Fill;
             dgvDatos.Location = new Point(0, 0);
+            dgvDatos.MultiSelect = false;
             dgvDatos.Name = "dgvDatos";
             dgvDatos.ReadOnly = true;
+            dgvDatos.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvDatos.Size = new Size(574, 225);
             dgvDatos.TabIndex = 0;
             // 

@@ -72,7 +72,7 @@ namespace BombonesApp2026.Servicios.Mapeadores
                 CantidadBombones = caja.CantidadBombones,
                 EsSurtida = caja.EsSurtida,
                 Activo = caja.Activo,
-                Detalles=caja.Detalles.Select(d=>d.ToListDto()).ToList()??new List<DetalleCajaListDto>()
+                Detalles=caja.Detalles.Select(d=>d.ToDto()).ToList()??new List<DetalleCajaListDto>()
             };
         }
     }
