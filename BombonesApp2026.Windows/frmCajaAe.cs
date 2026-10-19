@@ -1,7 +1,6 @@
 ﻿using BombonesApp2026.Servicios.DTOs.Caja;
 using BombonesApp2026.Servicios.DTOs.DetalleCaja;
 using BombonesApp2026.Servicios.Interfaces;
-using BombonesApp2026.Windows.Classes;
 using System.ComponentModel;
 
 namespace BombonesApp2026.Windows
@@ -11,7 +10,6 @@ namespace BombonesApp2026.Windows
         private readonly IBombonServicio _bombonServicio;
         private BindingSource _bindingSource = new BindingSource();
         private BindingList<DetalleCajaListDto> _listaDetalles = new BindingList<DetalleCajaListDto>();
-        private EditorCaja _editorCaja = null!;
         private CajaEditDto? _cajaDto;
         public frmCajaAe(IBombonServicio bombonServicio)
         {
@@ -23,25 +21,6 @@ namespace BombonesApp2026.Windows
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            if(_cajaDto is null)
-            {
-                InicializarEditor();
-            }
-        }
-        public CajaEditDto? GetCaja()
-        {
-            return _cajaDto;
-        }
-
-        public void SetCaja(CajaEditDto cajaEditDto)
-        {
-            _cajaDto = cajaEditDto;
-            _editorCaja = new EditorCaja(_cajaDto);
-        }
-        public void InicializarEditor()
-        {
-            _cajaDto = new CajaEditDto();
-            _editorCaja = new EditorCaja(_cajaDto);
         }
         private void btnOK_Click(object sender, EventArgs e)
         {
@@ -94,41 +73,7 @@ namespace BombonesApp2026.Windows
 
         private void btnAgregarBombon_Click(object sender, EventArgs e)
         {
-            using (frmManejarBombonCajaAe frm = new frmManejarBombonCajaAe(_bombonServicio) { Text = "Nuevo Detalle" })
-            {
-                DialogResult dr = frm.ShowDialog();
-                if (dr == DialogResult.Cancel) return;
-                var (bombonDto, cantidad) = frm.GetDatos();
-                if (bombonDto is null) return;
-
-                try
-                {
-                    _editorCaja.AgregarBombon(bombonDto, cantidad);
-                    MostrarDatos(_editorCaja.ObtenerResumen());
-
-                }
-                catch (Exception ex)
-                {
-
-                    MessageBox.Show($"No se pudo agregar el bombón {ex.Message}",
-                        "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-
-            }
         }
 
-        private void MostrarDatos((IReadOnlyCollection<DetalleCajaListDto> Detalles,
-            int Cantidad, decimal Precio, bool EsSurtida) resumen)
-        {
-            _listaDetalles.Clear();
-            foreach (var item in resumen.Detalles)
-            {
-                _listaDetalles.Add(item);
-            }
-            txtCantidadBombones.Text = resumen.Cantidad.ToString();
-            txtPrecio.Text = resumen.Precio.ToString();
-            txtSurtida.Text = resumen.EsSurtida?"Sí":"No";
-        }
     }
 }

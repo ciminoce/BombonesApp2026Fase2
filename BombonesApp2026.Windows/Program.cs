@@ -4,8 +4,6 @@ using BombonesApp2026.Datos.Interfaces;
 using BombonesApp2026.Datos.Repositorios;
 using BombonesApp2026.Servicios.Interfaces;
 using BombonesApp2026.Servicios.Servicios;
-using CajaesApp2026.Datos.Repositorios;
-using CajaesApp2026.Servicios.Servicios;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -54,17 +52,17 @@ namespace BombonesApp2026.Windows
             ITransporteRepositorio transporteRepositorio = new TransporteRepositorio(context);
             IBombonRepositorio bombonRepositorio = new BombonRepositorio(context);
             IClienteRepositorio clienteRepositorio = new ClienteRepositorio(context);
-            ICajaRepositorio cajaRepositorio=new CajaRepositorio(context);
+            ICajaRepositorio cajaRepositorio = new CajaRepositorio(context);
 
-            ITipoBombonServicio tipoBombonServicio = new TipoBombonServicio(tipoBombonRepositorio,unitOfWork);
-            IFormaDePagoServicio formaDePagoServicio = new FormaDePagoServicio(formaDePagoRepositorio,unitOfWork);
-            IRolServicio rolServicio = new RolServicio(rolRepositorio,unitOfWork);
+            ITipoBombonServicio tipoBombonServicio = new TipoBombonServicio(tipoBombonRepositorio, unitOfWork);
+            IFormaDePagoServicio formaDePagoServicio = new FormaDePagoServicio(formaDePagoRepositorio, unitOfWork);
+            IRolServicio rolServicio = new RolServicio(rolRepositorio, unitOfWork);
             IProvinciaServicio provinciaServicio = new ProvinciaServicio(provinciaRepositorio, unitOfWork);
-            ICiudadServicio ciudadServicio = new CiudadServicio(ciudadRepositorio,unitOfWork);
-            ITransporteServicio transporteServicio = new TransporteServicio(transporteRepositorio,unitOfWork);
-            IBombonServicio bombonServicio = new BombonServicio(bombonRepositorio,unitOfWork);
-            IClienteServicio clienteServicio = new ClienteServicio(clienteRepositorio,unitOfWork);
-            ICajaServicio cajaServicio=new CajaServicio(cajaRepositorio);
+            ICiudadServicio ciudadServicio = new CiudadServicio(ciudadRepositorio, unitOfWork);
+            ITransporteServicio transporteServicio = new TransporteServicio(transporteRepositorio, unitOfWork);
+            IBombonServicio bombonServicio = new BombonServicio(bombonRepositorio, unitOfWork);
+            IClienteServicio clienteServicio = new ClienteServicio(clienteRepositorio, unitOfWork);
+            ICajaServicio cajaServicio = new CajaServicio(cajaRepositorio);
             Application.Run(new frmPrincipal(
                 tipoBombonServicio,
                 formaDePagoServicio,

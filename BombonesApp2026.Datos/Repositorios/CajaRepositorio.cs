@@ -1,10 +1,9 @@
 ﻿using BombonesApp2026.Datos;
 using BombonesApp2026.Datos.Interfaces;
-using BombonesApp2026.Datos.Repositorios;
 using BombonesApp2026.Entidades.Entidades;
 using Microsoft.EntityFrameworkCore;
 
-namespace CajaesApp2026.Datos.Repositorios
+namespace BombonesApp2026.Datos.Repositorios
 {
     public class CajaRepositorio :Repositorio<Caja>, ICajaRepositorio
     {
