@@ -5,7 +5,7 @@ using BombonesApp2026.Servicios.DTOs.Caja;
 using BombonesApp2026.Servicios.Interfaces;
 using BombonesApp2026.Servicios.Mapeadores;
 
-namespace CajaesApp2026.Servicios.Servicios
+namespace BombonesApp2026.Servicios.Servicios
 {
     public class CajaServicio : ICajaServicio
     {
