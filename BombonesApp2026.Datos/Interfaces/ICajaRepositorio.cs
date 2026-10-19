@@ -1,7 +1,6 @@
-﻿using BombonesApp2026.Datos.Interfaces;
-using BombonesApp2026.Entidades.Entidades;
+﻿using BombonesApp2026.Entidades.Entidades;
 
-namespace CajaesApp2026.Datos.Interfaces
+namespace BombonesApp2026.Datos.Interfaces
 {
     public interface ICajaRepositorio : IRepositorio<Caja>
     {

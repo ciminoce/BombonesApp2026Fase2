@@ -1,7 +1,7 @@
 ﻿using BombonesApp2026.Datos;
+using BombonesApp2026.Datos.Interfaces;
 using BombonesApp2026.Datos.Repositorios;
 using BombonesApp2026.Entidades.Entidades;
-using CajaesApp2026.Datos.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace CajaesApp2026.Datos.Repositorios
