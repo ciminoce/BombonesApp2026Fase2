@@ -321,6 +321,7 @@
             Controls.Add(btnCancelar);
             Controls.Add(btnOK);
             Name = "frmClienteAe";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "frmClienteAe";
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();

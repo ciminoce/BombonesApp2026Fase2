@@ -258,6 +258,7 @@
             Controls.Add(txtNombreCaja);
             Controls.Add(label2);
             Name = "frmDetallesCaja";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "frmDetallesCaja";
             ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
             panel1.ResumeLayout(false);

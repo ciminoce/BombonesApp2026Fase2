@@ -1,15 +1,10 @@
 ﻿using Bombones2026.Servicios.DTOs.Ciudad;
 using Bombones2026.Servicios.DTOs.Paginacion;
 using BombonesApp2026.Servicios.Interfaces;
-using BombonesApp2026.Servicios.Servicios;
 using BombonesApp2026.Windows.Helpers;
 
 namespace BombonesApp2026.Windows
 {
-    //TODO: Modificar el filtrado de ciduidades
-    //TODO: Método para cargar las provincias
-    //TODO: ver cuando se carga el combo de provincias en el load
-    //TODO: Corregir la condición del sePuedeVer!!!
     public partial class frmCiudades : Form
     {
         private readonly ICiudadServicio _ciudadServicio;
@@ -133,7 +128,8 @@ namespace BombonesApp2026.Windows
             CiudadListDto? ciudadDto = _bindingSource
                 .ObtenerSeleccionado<CiudadListDto>(_servicioMensajes);
             if (ciudadDto is null) return;
-            if(!_servicioMensajes.Confirmar($"¿Desea borrar la ciudad {ciudadDto.Ciudad}?")){
+            if (!_servicioMensajes.Confirmar($"¿Desea borrar la ciudad {ciudadDto.Ciudad}?"))
+            {
                 return;
             }
             try

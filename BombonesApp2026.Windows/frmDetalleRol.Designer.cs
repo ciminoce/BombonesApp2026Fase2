@@ -29,12 +29,12 @@
         private void InitializeComponent()
         {
             splitContainer1 = new SplitContainer();
+            btnCerrar = new Button();
             chkActivo = new CheckBox();
             txtDescripcion = new TextBox();
             label2 = new Label();
             txtRol = new TextBox();
             label1 = new Label();
-            btnCerrar = new Button();
             dataGridView1 = new DataGridView();
             colId = new DataGridViewTextBoxColumn();
             colNombre = new DataGridViewTextBoxColumn();
@@ -67,6 +67,17 @@
             splitContainer1.Size = new Size(568, 450);
             splitContainer1.SplitterDistance = 144;
             splitContainer1.TabIndex = 0;
+            // 
+            // btnCerrar
+            // 
+            btnCerrar.Image = Properties.Resources.cancel_24px;
+            btnCerrar.Location = new Point(460, 57);
+            btnCerrar.Name = "btnCerrar";
+            btnCerrar.Size = new Size(75, 60);
+            btnCerrar.TabIndex = 8;
+            btnCerrar.Text = "Cerrar";
+            btnCerrar.TextImageRelation = TextImageRelation.ImageAboveText;
+            btnCerrar.UseVisualStyleBackColor = true;
             // 
             // chkActivo
             // 
@@ -114,17 +125,6 @@
             label1.TabIndex = 5;
             label1.Text = "Rol:";
             // 
-            // btnCerrar
-            // 
-            btnCerrar.Image = Properties.Resources.cancel_24px;
-            btnCerrar.Location = new Point(460, 57);
-            btnCerrar.Name = "btnCerrar";
-            btnCerrar.Size = new Size(75, 60);
-            btnCerrar.TabIndex = 8;
-            btnCerrar.Text = "Cerrar";
-            btnCerrar.TextImageRelation = TextImageRelation.ImageAboveText;
-            btnCerrar.UseVisualStyleBackColor = true;
-            // 
             // dataGridView1
             // 
             dataGridView1.AllowUserToAddRows = false;
@@ -159,6 +159,7 @@
             ClientSize = new Size(568, 450);
             Controls.Add(splitContainer1);
             Name = "frmDetalleRol";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "frmDetalleRol";
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel1.PerformLayout();

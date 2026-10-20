@@ -127,6 +127,7 @@
             Controls.Add(txtRol);
             Controls.Add(label1);
             Name = "frmRolesAe";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "frmRolAe";
             Load += frmRolesAe_Load;
             ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();

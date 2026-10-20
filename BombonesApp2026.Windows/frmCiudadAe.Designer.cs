@@ -114,6 +114,7 @@
             Controls.Add(label2);
             Controls.Add(label1);
             Name = "frmCiudadAe";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "frmCiudadAe";
             ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
             ResumeLayout(false);

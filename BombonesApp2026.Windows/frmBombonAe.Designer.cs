@@ -228,6 +228,7 @@
             Controls.Add(label2);
             Controls.Add(label1);
             Name = "frmBombonAe";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "frmBombonAe";
             Load += frmBombonAe_Load;
             ((System.ComponentModel.ISupportInitialize)nudStock).EndInit();
