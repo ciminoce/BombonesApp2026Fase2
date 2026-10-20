@@ -28,12 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             toolStrip1 = new ToolStrip();
             tsbNuevo = new ToolStripButton();
             tsbBorrar = new ToolStripButton();
             tsbEditar = new ToolStripButton();
             toolStripSeparator1 = new ToolStripSeparator();
+            toolStripLabel2 = new ToolStripLabel();
+            toolStripLabel4 = new ToolStripLabel();
+            tsCboActivo = new ToolStripComboBox();
+            toolStripLabel1 = new ToolStripLabel();
+            txtBuscar = new ToolStripTextBox();
+            tsbBuscar = new ToolStripButton();
             tsbActualizar = new ToolStripButton();
             toolStripSeparator2 = new ToolStripSeparator();
             tsbCerrar = new ToolStripButton();
@@ -52,12 +58,6 @@
             btnAnterior = new Button();
             btnSiguiente = new Button();
             label2 = new Label();
-            toolStripLabel2 = new ToolStripLabel();
-            toolStripLabel4 = new ToolStripLabel();
-            tsCboActivo = new ToolStripComboBox();
-            toolStripLabel1 = new ToolStripLabel();
-            txtBuscar = new ToolStripTextBox();
-            tsbBuscar = new ToolStripButton();
             toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -94,6 +94,7 @@
             tsbBorrar.Size = new Size(52, 67);
             tsbBorrar.Text = "&Borrar";
             tsbBorrar.TextImageRelation = TextImageRelation.ImageAboveText;
+            tsbBorrar.Click += tsbBorrar_Click;
             // 
             // tsbEditar
             // 
@@ -109,6 +110,47 @@
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new Size(6, 70);
+            // 
+            // toolStripLabel2
+            // 
+            toolStripLabel2.Image = Properties.Resources.filled_filter_48px;
+            toolStripLabel2.ImageScaling = ToolStripItemImageScaling.None;
+            toolStripLabel2.Name = "toolStripLabel2";
+            toolStripLabel2.Size = new Size(109, 67);
+            toolStripLabel2.Text = "Filtrar por ";
+            // 
+            // toolStripLabel4
+            // 
+            toolStripLabel4.Name = "toolStripLabel4";
+            toolStripLabel4.Size = new Size(45, 67);
+            toolStripLabel4.Text = "Estado:";
+            // 
+            // tsCboActivo
+            // 
+            tsCboActivo.DropDownStyle = ComboBoxStyle.DropDownList;
+            tsCboActivo.Name = "tsCboActivo";
+            tsCboActivo.Size = new Size(121, 70);
+            // 
+            // toolStripLabel1
+            // 
+            toolStripLabel1.Name = "toolStripLabel1";
+            toolStripLabel1.Size = new Size(45, 67);
+            toolStripLabel1.Text = "Buscar:";
+            // 
+            // txtBuscar
+            // 
+            txtBuscar.Name = "txtBuscar";
+            txtBuscar.Size = new Size(150, 70);
+            // 
+            // tsbBuscar
+            // 
+            tsbBuscar.Image = Properties.Resources.search_property_48px;
+            tsbBuscar.ImageScaling = ToolStripItemImageScaling.None;
+            tsbBuscar.ImageTransparentColor = Color.Magenta;
+            tsbBuscar.Name = "tsbBuscar";
+            tsbBuscar.Size = new Size(52, 67);
+            tsbBuscar.Text = "B&uscar";
+            tsbBuscar.TextImageRelation = TextImageRelation.ImageAboveText;
             // 
             // tsbActualizar
             // 
@@ -164,8 +206,8 @@
             // 
             dgvDatos.AllowUserToAddRows = false;
             dgvDatos.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle2.BackColor = Color.FromArgb(224, 224, 224);
-            dgvDatos.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.BackColor = Color.FromArgb(224, 224, 224);
+            dgvDatos.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             dgvDatos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvDatos.Columns.AddRange(new DataGridViewColumn[] { colId, colEmpleado, colTelefono, colEmail, colActivo });
             dgvDatos.Dock = DockStyle.Fill;
@@ -283,47 +325,6 @@
             label2.Size = new Size(118, 15);
             label2.TabIndex = 8;
             label2.Text = "Cantidad de Páginas:";
-            // 
-            // toolStripLabel2
-            // 
-            toolStripLabel2.Image = Properties.Resources.filled_filter_48px;
-            toolStripLabel2.ImageScaling = ToolStripItemImageScaling.None;
-            toolStripLabel2.Name = "toolStripLabel2";
-            toolStripLabel2.Size = new Size(109, 67);
-            toolStripLabel2.Text = "Filtrar por ";
-            // 
-            // toolStripLabel4
-            // 
-            toolStripLabel4.Name = "toolStripLabel4";
-            toolStripLabel4.Size = new Size(45, 67);
-            toolStripLabel4.Text = "Estado:";
-            // 
-            // tsCboActivo
-            // 
-            tsCboActivo.DropDownStyle = ComboBoxStyle.DropDownList;
-            tsCboActivo.Name = "tsCboActivo";
-            tsCboActivo.Size = new Size(121, 70);
-            // 
-            // toolStripLabel1
-            // 
-            toolStripLabel1.Name = "toolStripLabel1";
-            toolStripLabel1.Size = new Size(45, 67);
-            toolStripLabel1.Text = "Buscar:";
-            // 
-            // txtBuscar
-            // 
-            txtBuscar.Name = "txtBuscar";
-            txtBuscar.Size = new Size(150, 70);
-            // 
-            // tsbBuscar
-            // 
-            tsbBuscar.Image = Properties.Resources.search_property_48px;
-            tsbBuscar.ImageScaling = ToolStripItemImageScaling.None;
-            tsbBuscar.ImageTransparentColor = Color.Magenta;
-            tsbBuscar.Name = "tsbBuscar";
-            tsbBuscar.Size = new Size(52, 67);
-            tsbBuscar.Text = "B&uscar";
-            tsbBuscar.TextImageRelation = TextImageRelation.ImageAboveText;
             // 
             // frmEmpleados
             // 

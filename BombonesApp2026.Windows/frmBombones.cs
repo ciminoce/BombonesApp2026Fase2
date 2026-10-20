@@ -99,7 +99,7 @@ namespace BombonesApp2026.Windows
                             .FirstOrDefault(tb => tb.ProductoId == nuevoId);
                         if (nuevoTipo is null) return;
                         _bindingSource.Position = _bindingSource.IndexOf(nuevoTipo);
-                        _servicioMensajes.Informacion("Bombon Agregado");
+                        _servicioMensajes.Informacion("Registro agregado");
 
                     }
                     else
@@ -133,7 +133,7 @@ namespace BombonesApp2026.Windows
             {
                 _bombonServicio.Borrar(bombonDto.ProductoId);
                 RecargarGrilla();
-                _servicioMensajes.Informacion("Bombon eliminado");
+                _servicioMensajes.Informacion("Registro eliminado");
             }
             catch (Exception ex)
             {

@@ -1,6 +1,8 @@
 ﻿using Bombones2026.Servicios.DTOs.Ciudad;
 using Bombones2026.Servicios.DTOs.Paginacion;
 using BombonesApp2026.Servicios.Interfaces;
+using BombonesApp2026.Servicios.Servicios;
+using BombonesApp2026.Windows.Helpers;
 
 namespace BombonesApp2026.Windows
 {
@@ -13,14 +15,9 @@ namespace BombonesApp2026.Windows
         private readonly ICiudadServicio _ciudadServicio;
         private readonly IProvinciaServicio _provinciaServicio;
         private BindingSource _bindingSource = new BindingSource();
+        private ServicioMensajes _servicioMensajes = new();
+        private EstadoNavegacion _estadoNavegacion = new(10);
         //para paginar
-        private int paginaActual = 1;
-        private int cantidadPorPagina = 10;
-        private int totalRegistros = 0;
-        private int totalPaginas = 0;
-
-        private bool? filtroActivo = null;
-        private string? textoBuscar = null;
         public frmCiudades(ICiudadServicio ciuidadServicio, IProvinciaServicio provinciaServicio)
         {
             InitializeComponent();
@@ -37,32 +34,38 @@ namespace BombonesApp2026.Windows
         {
             try
             {
-                var resultado = _ciudadServicio.ObtenerPagina(paginaActual, cantidadPorPagina, filtroActivo, textoBuscar);
+                var paginaSolicitada = _estadoNavegacion.PaginaActual;
+                var resultado = _ciudadServicio
+                    .ObtenerPagina(paginaSolicitada,
+                    _estadoNavegacion.CantidadPorPagina,
+                    _estadoNavegacion.FiltroActivo, _estadoNavegacion.TextoBuscar);
+                _estadoNavegacion.Actualizar(resultado.TotalRegistros);
+                if (paginaSolicitada != _estadoNavegacion.PaginaActual)
+                {
+                    resultado = _ciudadServicio
+                        .ObtenerPagina(_estadoNavegacion.PaginaActual,
+                        _estadoNavegacion.CantidadPorPagina,
+                        _estadoNavegacion.FiltroActivo, _estadoNavegacion.TextoBuscar);
+                    _estadoNavegacion.Actualizar(resultado.TotalRegistros);
+                }
                 MostrarDatosEnGrilla(resultado);
             }
             catch (Exception ex)
             {
 
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                _servicioMensajes.Error(ex.Message);
             }
         }
 
         private void MostrarDatosEnGrilla(ResultadoPaginacionDto<CiudadListDto> resultado)
         {
-            totalPaginas = resultado.TotalPaginas;
-            totalRegistros = resultado.TotalRegistros;
-            int desde = 1 + (paginaActual - 1) * cantidadPorPagina;
-            int hasta = desde + cantidadPorPagina - 1;//OJO acá!!
-            if (hasta > totalRegistros)
-            {
-                hasta = totalRegistros;
-            }
+            //_estadoNavegacion.Actualizar(resultado.TotalRegistros);
+
             _bindingSource.DataSource = resultado.Items;
             dgvDatos.DataSource = _bindingSource;
 
-            lblCantidad.Text = $"{desde} a {hasta} de {totalRegistros}";
-            lblPaginas.Text = $"{paginaActual} de {totalPaginas}";
+            lblCantidad.Text = _estadoNavegacion.TextoRegistros();
+            lblPaginas.Text = _estadoNavegacion.TextoPaginas();
 
             btnPrimero.Enabled = resultado.TieneRegistrosAnteriores;
             btnAnterior.Enabled = resultado.TieneRegistrosAnteriores;
@@ -90,9 +93,9 @@ namespace BombonesApp2026.Windows
                         ciudadCreateDto.Nombre.Contains(txtBuscar.Text);
                     if (sePuedeVer)
                     {
-                        paginaActual = _ciudadServicio
-                            .ObtenerPaginaRegistro(ciudadCreateDto.Nombre, cantidadPorPagina,
-                            filtroActivo, textoBuscar);
+                        _estadoNavegacion.PaginaActual = _ciudadServicio
+                            .ObtenerPaginaRegistro(ciudadCreateDto.Nombre, _estadoNavegacion.CantidadPorPagina,
+                            _estadoNavegacion.FiltroActivo, _estadoNavegacion.TextoBuscar);
 
                     }
                     RecargarGrilla();
@@ -103,23 +106,18 @@ namespace BombonesApp2026.Windows
                             .FirstOrDefault(tb => tb.CiudadId == nuevoId);
                         if (nuevoTipo is null) return;
                         _bindingSource.Position = _bindingSource.IndexOf(nuevoTipo);
-                        MessageBox.Show("Ciudad Agregada",
-                            "Mensaje", MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
+                        _servicioMensajes.Informacion("Registro agregado");
 
                     }
                     else
                     {
-                        MessageBox.Show($"Ciudad {ciudadCreateDto.Nombre} agregada.\nNo se muestra por condición de filtrado o búsqueda",
-                            "Confirmación", MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
+                        _servicioMensajes.Informacion($"Ciudad {ciudadCreateDto.Nombre} agregada." +
+                            $"\nNo se muestra por condición de filtrado o búsqueda");
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message,
-                                "Error", MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
+                    _servicioMensajes.Error(ex.Message);
                 }
             }
         }
@@ -131,42 +129,23 @@ namespace BombonesApp2026.Windows
 
         private void tsbBorrar_Click(object sender, EventArgs e)
         {
-            if (_bindingSource.Current == null)
-            {
-                MessageBox.Show("Debe seleccionar una fila de la grilla",
-                    "Advertencia",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
+
+            CiudadListDto? ciudadDto = _bindingSource
+                .ObtenerSeleccionado<CiudadListDto>(_servicioMensajes);
+            if (ciudadDto is null) return;
+            if(!_servicioMensajes.Confirmar($"¿Desea borrar la ciudad {ciudadDto.Ciudad}?")){
                 return;
             }
-
-            CiudadListDto ciudadDto = (CiudadListDto)_bindingSource.Current!;
-            DialogResult dr = MessageBox.Show($"¿Desea borrar la ciudad {ciudadDto.Ciudad}?",
-                "Confirmar",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question,
-                MessageBoxDefaultButton.Button2);
-            if (dr == DialogResult.No) return;
             try
             {
                 _ciudadServicio.Borrar(ciudadDto.CiudadId);
                 RecargarGrilla();
-                if (paginaActual > totalPaginas && totalPaginas > 0)
-                {
-                    paginaActual = totalPaginas;
-                    RecargarGrilla();
-                }
-                MessageBox.Show("Ciudad eliminada",
-                    "Mensaje",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                _servicioMensajes.Informacion("Registro eliminado");
             }
             catch (Exception ex)
             {
 
-                MessageBox.Show(ex.Message,
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                _servicioMensajes.Error(ex.Message);
 
             }
 
@@ -202,8 +181,8 @@ namespace BombonesApp2026.Windows
 
                     if (sePuedeVer)
                     {
-                        paginaActual = _ciudadServicio.ObtenerPaginaRegistro(ciudadEditDto.Nombre,
-                            cantidadPorPagina, filtroActivo, textoBuscar);
+                        _estadoNavegacion.PaginaActual = _ciudadServicio.ObtenerPaginaRegistro(ciudadEditDto.Nombre,
+                            _estadoNavegacion.CantidadPorPagina, _estadoNavegacion.FiltroActivo, _estadoNavegacion.TextoBuscar);
                     }
                     RecargarGrilla();
                     if (sePuedeVer)
@@ -230,10 +209,7 @@ namespace BombonesApp2026.Windows
                 catch (Exception ex)
                 {
 
-                    MessageBox.Show(ex.Message,
-                         "Error",
-                         MessageBoxButtons.OK,
-                         MessageBoxIcon.Error);
+                    _servicioMensajes.Error(ex.Message);
 
                 }
             }
@@ -242,57 +218,44 @@ namespace BombonesApp2026.Windows
 
         private void btnPrimero_Click(object sender, EventArgs e)
         {
-            paginaActual = 1;
+            _estadoNavegacion.IrPrimera();
             RecargarGrilla();
         }
 
         private void btnAnterior_Click(object sender, EventArgs e)
         {
-            paginaActual--;
-            if (paginaActual == 0)
-            {
-                paginaActual = 1;
-
-            }
+            _estadoNavegacion.IrAnterior();
             RecargarGrilla();
         }
 
         private void btnSiguiente_Click(object sender, EventArgs e)
         {
-            paginaActual++;
-            if (paginaActual > totalPaginas)
-            {
-                paginaActual = totalPaginas;
-            }
+            _estadoNavegacion.IrSiguiente();
             RecargarGrilla();
         }
 
         private void btnUltimo_Click(object sender, EventArgs e)
         {
-            paginaActual = totalPaginas;
+            _estadoNavegacion.IrUltima();
             RecargarGrilla();
         }
         private void tsbBuscar_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtBuscar.Text))
             {
-                MessageBox.Show("Debe poner un texto para efectuar la búsqueda",
-                    "Advertencia",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
+                _servicioMensajes.Advertencia("Debe poner un texto para efectuar la búsqueda");
+                return;
             }
-            textoBuscar = txtBuscar.Text;
+            _estadoNavegacion.TextoBuscar = txtBuscar.Text;
             tsbBuscar.BackColor = Color.Orange;
-            paginaActual = 1;
+            _estadoNavegacion.IrPrimera();
             RecargarGrilla();
 
         }
 
         private void tsbActualizar_Click(object sender, EventArgs e)
         {
-            paginaActual = 1;
-            filtroActivo = null;
-            textoBuscar = null;
+            _estadoNavegacion.Inicializar();
             txtBuscar.Clear();
             tsbBuscar.BackColor = SystemColors.Control;
             RecargarGrilla();

@@ -2,6 +2,7 @@
 using Bombones2026.Servicios.DTOs.Transporte;
 using BombonesApp2026.Entidades.Enum;
 using BombonesApp2026.Servicios.Interfaces;
+using BombonesApp2026.Windows.Helpers;
 
 namespace BombonesApp2026.Windows
 {
@@ -10,16 +11,11 @@ namespace BombonesApp2026.Windows
         private readonly ITransporteServicio _transporteServicio;
         private readonly IProvinciaServicio _provinciaServicio;
         private BindingSource _bindingSource = new BindingSource();
+        private ServicioMensajes _servicioMensajes = new();
+        private EstadoNavegacion _estadoNavegacion = new(10);
         //para paginar
-        private int paginaActual = 1;
-        private int cantidadPorPagina = 10;
-        private int totalRegistros = 0;
-        private int totalPaginas = 0;
-        //para filtrar
         private bool estaCargado = false;
-        private bool? filtroActivo = null;
         private int? provinciaIdFiltro = null;
-        private string? textoBuscar = null;
         public frmTransportes(ITransporteServicio servicio, IProvinciaServicio provinciaServicio)
         {
             InitializeComponent();
@@ -72,32 +68,39 @@ namespace BombonesApp2026.Windows
         {
             try
             {
-                var resultado = _transporteServicio.ObtenerPagina(paginaActual, cantidadPorPagina,
-                    filtroActivo, provinciaIdFiltro, textoBuscar);
+                var paginaSolicitada = _estadoNavegacion.PaginaActual;
+                var resultado = _transporteServicio
+                    .ObtenerPagina(paginaSolicitada,
+                    _estadoNavegacion.CantidadPorPagina,
+                    _estadoNavegacion.FiltroActivo, provinciaIdFiltro,
+                    _estadoNavegacion.TextoBuscar);
+                _estadoNavegacion.Actualizar(resultado.TotalRegistros);
+                if (paginaSolicitada != _estadoNavegacion.PaginaActual)
+                {
+                    resultado = _transporteServicio
+                        .ObtenerPagina(_estadoNavegacion.PaginaActual,
+                        _estadoNavegacion.CantidadPorPagina,
+                        _estadoNavegacion.FiltroActivo,provinciaIdFiltro,
+                        _estadoNavegacion.TextoBuscar);
+                    _estadoNavegacion.Actualizar(resultado.TotalRegistros);
+                }
                 MostrarDatosEnGrilla(resultado);
             }
             catch (Exception ex)
             {
 
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                _servicioMensajes.Error(ex.Message);
             }
         }
 
         private void MostrarDatosEnGrilla(ResultadoPaginacionDto<TransporteListDto> resultado)
         {
-            totalPaginas = resultado.TotalPaginas;
-            totalRegistros = resultado.TotalRegistros;
-            int desde = 1 + (paginaActual - 1) * cantidadPorPagina;
-            int hasta = desde + cantidadPorPagina;
-            if (hasta > totalRegistros)
-            {
-                hasta = totalRegistros;
-            }
+
             _bindingSource.DataSource = resultado.Items;
             dgvDatos.DataSource = _bindingSource;
 
-            lblCantidad.Text = $"{desde} a {hasta} de {totalRegistros}";
-            lblPaginas.Text = $"{paginaActual} de {totalPaginas}";
+            lblCantidad.Text = _estadoNavegacion.TextoRegistros();
+            lblPaginas.Text = _estadoNavegacion.TextoPaginas();
 
             btnPrimero.Enabled = resultado.TieneRegistrosAnteriores;
             btnAnterior.Enabled = resultado.TieneRegistrosAnteriores;
@@ -124,15 +127,15 @@ namespace BombonesApp2026.Windows
                         ProvinciaId = transporteEditDto.ProvinciaId,
                     };
                     int nuevoId = _transporteServicio.Agregar(transporteCreateDto);
-                    bool sePuedeVer = (filtroActivo is null || filtroActivo == true) &&
+                    bool sePuedeVer = (_estadoNavegacion.FiltroActivo is null || _estadoNavegacion.FiltroActivo == true) &&
                         (provinciaIdFiltro is null || transporteCreateDto.ProvinciaId == provinciaIdFiltro) &&
                         (string.IsNullOrWhiteSpace(txtBuscar.Text) ||
                         transporteCreateDto.NombreEmpresa.Contains(txtBuscar.Text));
                     if (sePuedeVer)
                     {
-                        paginaActual = _transporteServicio
-                            .ObtenerPaginaRegistro(transporteCreateDto.NombreEmpresa, cantidadPorPagina,
-                            filtroActivo, provinciaIdFiltro, textoBuscar);
+                        _estadoNavegacion.PaginaActual = _transporteServicio
+                            .ObtenerPaginaRegistro(transporteCreateDto.NombreEmpresa, _estadoNavegacion.CantidadPorPagina,
+                            _estadoNavegacion.FiltroActivo, provinciaIdFiltro, _estadoNavegacion.TextoBuscar);
 
                     }
                     RecargarGrilla();
@@ -143,23 +146,18 @@ namespace BombonesApp2026.Windows
                             .FirstOrDefault(t => t.TransporteId == nuevoId);
                         if (nuevoTransporte is null) return;
                         _bindingSource.Position = _bindingSource.IndexOf(nuevoTransporte);
-                        MessageBox.Show("Transporte Agregado",
-                            "Mensaje", MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
+                        _servicioMensajes.Informacion("Registro agregado");
 
                     }
                     else
                     {
-                        MessageBox.Show($"Transporte {transporteCreateDto.NombreEmpresa} agregado.\nNo se muestra por condición de filtrado o búsqueda",
-                            "Confirmación", MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
+                        _servicioMensajes.Informacion($"Transporte {transporteCreateDto.NombreEmpresa} agregado." +
+                            $"\nNo se muestra por condición de filtrado o búsqueda");
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message,
-                                "Error", MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
+                    _servicioMensajes.Error(ex.Message);
                 }
             }
 
@@ -167,41 +165,23 @@ namespace BombonesApp2026.Windows
 
         private void tsbBorrar_Click(object sender, EventArgs e)
         {
-            if (_bindingSource.Current == null)
+            TransporteListDto? transporteDto = _bindingSource
+                .ObtenerSeleccionado<TransporteListDto>(_servicioMensajes);
+            if (transporteDto is null) return;
+            if (!_servicioMensajes.Confirmar($"¿Desea borrar el transporte {transporteDto.NombreEmpresa}?"))
             {
-                MessageBox.Show("Debe seleccionar una fila de la grilla",
-                    "Advertencia",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
                 return;
             }
-            TransporteListDto transporteDto = (TransporteListDto)_bindingSource.Current!;
-            DialogResult dr = MessageBox.Show($"¿Desea borrar el transporte {transporteDto.NombreEmpresa}?",
-                "Confirmar",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question,
-                MessageBoxDefaultButton.Button2);
-            if (dr == DialogResult.No) return;
             try
             {
                 _transporteServicio.Borrar(transporteDto.TransporteId);
                 RecargarGrilla();
-                if (paginaActual > totalPaginas && totalPaginas > 0)
-                {
-                    paginaActual = totalPaginas;
-                    RecargarGrilla();
-                }
-                MessageBox.Show("Transporte eliminado",
-                    "Mensaje",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                _servicioMensajes.Informacion("Registro eliminado");
             }
             catch (Exception ex)
             {
 
-                MessageBox.Show(ex.Message,
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                _servicioMensajes.Error(ex.Message);
 
             }
 
@@ -210,16 +190,9 @@ namespace BombonesApp2026.Windows
 
         private void tsbEditar_Click(object sender, EventArgs e)
         {
-            if (_bindingSource.Current == null)
-            {
-                MessageBox.Show("Debe seleccionar una fila de la grilla",
-                    "Advertencia",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-                return;
-            }
-
-            TransporteListDto transporteDto = (TransporteListDto)_bindingSource.Current!;
+            TransporteListDto? transporteDto = _bindingSource
+                .ObtenerSeleccionado<TransporteListDto>(_servicioMensajes);
+            if (transporteDto is null) return;
             int posicion = _bindingSource.Position;
             TransporteEditDto? transporteEditDto = _transporteServicio.ObtenerParaEditar(transporteDto.TransporteId);
             if (transporteEditDto is null) return;
@@ -234,15 +207,15 @@ namespace BombonesApp2026.Windows
                 {
                     _transporteServicio.Editar(transporteEditDto);
                     int editadoId = transporteEditDto.TransporteId;
-                    bool sePuedeVer = (filtroActivo is null || filtroActivo == true) &&
+                    bool sePuedeVer = (_estadoNavegacion.FiltroActivo is null || _estadoNavegacion.FiltroActivo == true) &&
                         (provinciaIdFiltro is null || transporteEditDto.ProvinciaId == provinciaIdFiltro) &&
                         (string.IsNullOrWhiteSpace(txtBuscar.Text) ||
                         transporteEditDto.NombreEmpresa.Contains(txtBuscar.Text));
 
                     if (sePuedeVer)
                     {
-                        paginaActual = _transporteServicio.ObtenerPaginaRegistro(transporteEditDto.NombreEmpresa,
-                            cantidadPorPagina, filtroActivo, provinciaIdFiltro, textoBuscar);
+                        _estadoNavegacion.PaginaActual = _transporteServicio.ObtenerPaginaRegistro(transporteEditDto.NombreEmpresa,
+                            _estadoNavegacion.CantidadPorPagina, _estadoNavegacion.FiltroActivo, provinciaIdFiltro, _estadoNavegacion.TextoBuscar);
                     }
                     RecargarGrilla();
                     if (sePuedeVer)
@@ -253,26 +226,19 @@ namespace BombonesApp2026.Windows
                             .FirstOrDefault(tb => tb.TransporteId == editadoId);
 
                         _bindingSource.Position = _bindingSource.IndexOf(editadoTipo);
-                        MessageBox.Show("Transporte editado",
-                            "Mensaje",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
+                        _servicioMensajes.Informacion("Registro editado");
                     }
                     else
                     {
-                        MessageBox.Show($"Transporte {transporteEditDto.NombreEmpresa} editado.\nNo se muestra por condición de filtrado o búsqueda",
-                            "Confirmación",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        _servicioMensajes.Informacion($"Transporte {transporteEditDto.NombreEmpresa} editado." +
+                            $"\nNo se muestra por condición de filtrado o búsqueda");
                     }
 
                 }
                 catch (Exception ex)
                 {
 
-                    MessageBox.Show(ex.Message,
-                         "Error",
-                         MessageBoxButtons.OK,
-                         MessageBoxIcon.Error);
+                    _servicioMensajes.Error(ex.Message);
 
                 }
             }
@@ -287,33 +253,25 @@ namespace BombonesApp2026.Windows
 
         private void btnPrimero_Click(object sender, EventArgs e)
         {
-            paginaActual = 1;
-            RecargarGrilla();
-        }
-
-        private void btnSiguiente_Click(object sender, EventArgs e)
-        {
-            paginaActual++;
-            if (paginaActual > totalPaginas)
-            {
-                paginaActual = totalPaginas;
-            }
+            _estadoNavegacion.IrPrimera();
             RecargarGrilla();
         }
 
         private void btnAnterior_Click(object sender, EventArgs e)
         {
-            paginaActual--;
-            if (paginaActual <= 0)
-            {
-                paginaActual = 1;
-            }
+            _estadoNavegacion.IrAnterior();
+            RecargarGrilla();
+        }
+
+        private void btnSiguiente_Click(object sender, EventArgs e)
+        {
+            _estadoNavegacion.IrSiguiente();
             RecargarGrilla();
         }
 
         private void btnUltimo_Click(object sender, EventArgs e)
         {
-            paginaActual = totalPaginas;
+            _estadoNavegacion.IrUltima();
             RecargarGrilla();
         }
 
@@ -321,27 +279,23 @@ namespace BombonesApp2026.Windows
         {
             if (string.IsNullOrWhiteSpace(txtBuscar.Text))
             {
-                MessageBox.Show("Debe poner un texto para efectuar la búsqueda",
-                    "Advertencia",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
+                _servicioMensajes.Advertencia("Debe poner un texto para efectuar la búsqueda");
+                return;
             }
-            textoBuscar = txtBuscar.Text;
+            _estadoNavegacion.TextoBuscar = txtBuscar.Text;
             tsbBuscar.BackColor = Color.Orange;
-            paginaActual = 1;
+            _estadoNavegacion.IrPrimera();
             RecargarGrilla();
         }
 
         private void tsbActualizar_Click(object sender, EventArgs e)
         {
-            filtroActivo = null;
+            _estadoNavegacion.Inicializar();
             provinciaIdFiltro = null;
-            textoBuscar = null;
             txtBuscar.Clear();
             tsbBuscar.BackColor = SystemColors.Control;
             tsCboProvincias.ComboBox.SelectedIndex = 0;
             tsCboActivo.ComboBox.SelectedIndex = 0;
-            paginaActual = 1;
             RecargarGrilla();
 
         }
@@ -358,7 +312,7 @@ namespace BombonesApp2026.Windows
             {
                 provinciaIdFiltro = (int)tsCboProvincias.ComboBox.SelectedValue!;
             }
-            paginaActual = 1;
+            _estadoNavegacion.IrPrimera();
             RecargarGrilla();
         }
 
@@ -369,16 +323,16 @@ namespace BombonesApp2026.Windows
             switch (tsCboActivo.ComboBox.Text)
             {
                 case "Todos":
-                    filtroActivo = null;
+                    _estadoNavegacion.FiltroActivo = null;
                     break;
                 case "Activos":
-                    filtroActivo = true;
+                    _estadoNavegacion.FiltroActivo = true;
                     break;
                 case "Inactivos":
-                    filtroActivo = false;
+                    _estadoNavegacion.FiltroActivo = false;
                     break;
             }
-            paginaActual = 1;
+            _estadoNavegacion.IrPrimera();
             RecargarGrilla();
         }
     }

@@ -14,5 +14,10 @@ namespace BombonesApp2026.Windows
         {
             InitializeComponent();
         }
+
+        private void tsbBorrar_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
