@@ -153,16 +153,9 @@ namespace BombonesApp2026.Windows
 
         private void tsbEditar_Click(object sender, EventArgs e)
         {
-            if (_bindingSource.Current == null)
-            {
-                MessageBox.Show("Debe seleccionar una fila de la grilla",
-                    "Advertencia",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-                return;
-            }
-
-            CiudadListDto ciudadDto = (CiudadListDto)_bindingSource.Current!;
+            CiudadListDto? ciudadDto = _bindingSource
+                .ObtenerSeleccionado<CiudadListDto>(_servicioMensajes);
+            if (ciudadDto is null) return;
             CiudadEditDto? ciudadEditDto = _ciudadServicio.ObtenerParaEditar(ciudadDto.CiudadId);
             if (ciudadEditDto is null) return;
             using (frmCiudadAe frm = new frmCiudadAe(_provinciaServicio) { Text = "Editar Ciudad " })
@@ -193,16 +186,12 @@ namespace BombonesApp2026.Windows
                             .FirstOrDefault(tb => tb.CiudadId == editadoId);
 
                         _bindingSource.Position = _bindingSource.IndexOf(editadoTipo);
-                        MessageBox.Show("Ciudad editada",
-                            "Mensaje",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
+                        _servicioMensajes.Informacion("Registro editado");
                     }
                     else
                     {
-                        MessageBox.Show($"Ciudad {ciudadEditDto.Nombre} editada.\nNo se muestra por condición de filtrado o búsqueda",
-                            "Confirmación",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        _servicioMensajes.Informacion($"Ciudad {ciudadEditDto.Nombre} editada." +
+                            $"\nNo se muestra por condición de filtrado o búsqueda");
                     }
 
                 }
