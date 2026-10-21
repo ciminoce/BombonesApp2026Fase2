@@ -17,7 +17,18 @@ namespace BombonesApp2026.Windows
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            CargarDatosComboBombones(cboBombones);
+            if(_bombonSeleccionado is null)
+            {
+                CargarDatosComboBombones(cboBombones);
+                txtBombon.Visible = false;
+            }
+            else
+            {
+                cboBombones.Visible = false;
+                txtBombon.Visible = true;
+                txtBombon.Text = _bombonSeleccionado.Nombre;
+                nudCantidad.Value = _cantidadBombones;
+            }
         }
 
         private void CargarDatosComboBombones(ComboBox cboBombones)
@@ -64,6 +75,12 @@ namespace BombonesApp2026.Windows
         {
             if (cboBombones.SelectedIndex == 0) return;
             _bombonSeleccionado = (BombonListDto)cboBombones.SelectedItem!;
+        }
+
+        internal void SetDatos(BombonListDto bombonDto, int cantidad)
+        {
+            _bombonSeleccionado = bombonDto;
+            _cantidadBombones= cantidad;
         }
     }
 }

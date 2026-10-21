@@ -202,6 +202,21 @@ namespace BombonesApp2026.Servicios.Servicios
                 throw new Exception($"Error al poblar los datos del combo de bombones: {ex.Message}", ex);
             }
         }
+
+        public BombonListDto? ObtenerPorId(int bombonId)
+        {
+            try
+            {
+                var bombon = _bombonRepositorio.ObtenerPorId(bombonId);
+                if (bombon is null) return null;
+                return bombon.ToListDto();
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"Error al intentar obtener los datos del bombón: {ex.Message}", ex);
+            }
+        }
     }
 
 }

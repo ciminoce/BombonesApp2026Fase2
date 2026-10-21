@@ -12,6 +12,6 @@ namespace BombonesApp2026.Servicios.DTOs.Caja
         public int CantidadBombones { get; set; }
         public bool EsSurtida { get; set; }
         public bool Activo { get; set; }
-        public ICollection<DetalleCajaListDto> Detalles { get; set; } = new List<DetalleCajaListDto>();
+        public ICollection<DetalleCajaDto> Detalles { get; set; } = new List<DetalleCajaDto>();
     }
 }

@@ -13,6 +13,7 @@ namespace BombonesApp2026.Servicios.Interfaces
         ResultadoPaginacionDto<BombonListDto> ObtenerPagina(int paginaActual, int cantidadPorPagina, bool? filtroActivo = null, string? textoBuscar = null);
         int ObtenerPaginaRegistro(string nombre, int cantidadPorPagina, bool? filtroActivo = null, string? textoBuscar = null);
         BombonEditDto? ObtenerParaEditar(int bombonId);
+        BombonListDto? ObtenerPorId(int bombonId);
         List<BombonListDto> ObtenerTodos();
     }
 }

@@ -60,6 +60,7 @@ namespace BombonesApp2026.Datos.Repositorios
         public override Bombon? ObtenerPorId(int ProductoId)
         {
             return _context.Bombones
+                .Include(b=>b.TipoBombon)
                 .AsNoTracking()
                 .FirstOrDefault(b => b.ProductoId == ProductoId);
         }

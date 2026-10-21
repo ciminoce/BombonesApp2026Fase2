@@ -5,9 +5,9 @@ namespace BombonesApp2026.Servicios.Mapeadores
 {
     public static class DetalleCajaMapper
     {
-        public static DetalleCajaListDto ToDto(this DetalleCaja detalle)
+        public static DetalleCajaDto ToDto(this DetalleCaja detalle)
         {
-            return new DetalleCajaListDto
+            return new DetalleCajaDto
             {
                 BombonId = detalle.BombonId,
                 NombreBombon = detalle.Bombon.Nombre,
@@ -15,9 +15,9 @@ namespace BombonesApp2026.Servicios.Mapeadores
                 Cantidad = detalle.Cantidad,
             };
         }
-        public static DetalleCajaListDto ToListDto(this DetalleCajaListDto detalleDto)
+        public static DetalleCajaDto ToListDto(this DetalleCajaDto detalleDto)
         {
-            return new DetalleCajaListDto
+            return new DetalleCajaDto
             {
                 BombonId = detalleDto.BombonId,
                 NombreBombon = detalleDto.NombreBombon,

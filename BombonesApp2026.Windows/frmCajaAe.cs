@@ -2,20 +2,26 @@
 using BombonesApp2026.Servicios.DTOs.DetalleCaja;
 using BombonesApp2026.Servicios.Interfaces;
 using BombonesApp2026.Windows.Classes;
+using BombonesApp2026.Windows.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
 
 namespace BombonesApp2026.Windows
 {
     public partial class frmCajaAe : Form
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly IBombonServicio _bombonServicio;
+        private ServicioMensajes _servicioMensajes = new();
         private BindingSource _bindingSource = new BindingSource();
-        private BindingList<DetalleCajaListDto> _listaDetalles = new BindingList<DetalleCajaListDto>();
+        private BindingList<DetalleCajaDto> _listaDetalles = new BindingList<DetalleCajaDto>();
         private CajaEditDto? _cajaDto;
-        private EditorCaja _editorCaja=null!;
-        public frmCajaAe(IBombonServicio bombonServicio)
+        private EditorCaja _editorCaja = null!;
+        public frmCajaAe(IServiceProvider serviceProvider,
+            IBombonServicio bombonServicio)
         {
             InitializeComponent();
+            _serviceProvider = serviceProvider;
             _bombonServicio = bombonServicio;
             _bindingSource.DataSource = _listaDetalles;
             dgvDatos.DataSource = _bindingSource;
@@ -94,10 +100,10 @@ namespace BombonesApp2026.Windows
 
         private void btnAgregarBombon_Click(object sender, EventArgs e)
         {
-            using (frmManejarBombonCajaAe frm = new frmManejarBombonCajaAe(_bombonServicio) { Text = "Nuevo Detalle" })
+            using (frmManejarBombonCajaAe frm = _serviceProvider.GetRequiredService<frmManejarBombonCajaAe>())
             {
-                DialogResult dr = frm.ShowDialog();
-                if (dr == DialogResult.Cancel) return;
+                frm.Text = "Nueve Detalle de Caja";
+                if (frm.ShowDialog() == DialogResult.Cancel) return;
                 var (bombonDto, cantidad) = frm.GetDatos();
                 if (bombonDto is null) return;
 
@@ -110,16 +116,14 @@ namespace BombonesApp2026.Windows
                 catch (Exception ex)
                 {
 
-                    MessageBox.Show($"No se pudo agregar el bombón {ex.Message}",
-                        "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    _servicioMensajes.Error($"No se pudo agregar el bombón {ex.Message}");
                 }
 
             }
 
         }
 
-        private void MostrarDatos((IReadOnlyCollection<DetalleCajaListDto> Detalles,
+        private void MostrarDatos((IReadOnlyCollection<DetalleCajaDto> Detalles,
             int Cantidad, decimal Precio, bool EsSurtida) resumen)
         {
             _listaDetalles.Clear();
@@ -130,6 +134,61 @@ namespace BombonesApp2026.Windows
             txtCantidadBombones.Text = resumen.Cantidad.ToString();
             txtPrecio.Text = resumen.Precio.ToString();
             txtSurtida.Text = resumen.EsSurtida ? "Sí" : "No";
+        }
+
+        private void btnBorrarBombon_Click(object sender, EventArgs e)
+        {
+            DetalleCajaDto? detalleDto = _bindingSource
+                .ObtenerSeleccionado<DetalleCajaDto>(_servicioMensajes);
+            if (detalleDto is null) return;
+            if (!_servicioMensajes.Confirmar($"¿Desea borrar el detalle" +
+                $" del bombón {detalleDto.NombreBombon}?")) return;
+            try
+            {
+                _editorCaja.EliminarBombon(detalleDto.BombonId);
+                MostrarDatos(_editorCaja.ObtenerResumen());
+            }
+            catch (Exception ex)
+            {
+
+                _servicioMensajes.Error(ex.Message);
+            }
+        }
+
+        private void btnEditarBombon_Click(object sender, EventArgs e)
+        {
+            DetalleCajaDto? detalleDto = _bindingSource
+                .ObtenerSeleccionado<DetalleCajaDto>(_servicioMensajes);
+            if (detalleDto is null) return;
+            using (frmManejarBombonCajaAe frm=_serviceProvider
+                .GetRequiredService<frmManejarBombonCajaAe>())
+            {
+                try
+                {
+                    frm.Text = "Modificar Cantidad del Bombón";
+                    var bombonDto = _bombonServicio.ObtenerPorId(detalleDto.BombonId);
+                    if (bombonDto is null) return;
+                    frm.SetDatos(bombonDto, detalleDto.Cantidad);
+                    if (frm.ShowDialog() == DialogResult.Cancel) return;
+                    var (bombon, cantidad) = frm.GetDatos();
+                    if (bombon is null) return;
+                    try
+                    {
+                        _editorCaja.ModificarCantidadBombon(bombon, cantidad);
+                        MostrarDatos(_editorCaja.ObtenerResumen());
+                    }
+                    catch (Exception ex)
+                    {
+
+                        _servicioMensajes.Error(ex.Message);
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    _servicioMensajes.Error(ex.Message);
+                }                
+            }
         }
     }
 }

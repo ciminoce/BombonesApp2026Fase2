@@ -23,10 +23,15 @@ namespace BombonesApp2026.Windows.Classes
             {
                 throw new InvalidOperationException("No se puede agregar un bombón inactivo");
             }
+            if (cantidad <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(cantidad),
+                    "La cantidad debe ser mayor a cero");
+            }
             var detalle = _cajaDto.Detalles.FirstOrDefault(d => d.BombonId == bombon.ProductoId);
             if (detalle is null)
             {
-                _cajaDto.Detalles.Add(new DetalleCajaListDto
+                _cajaDto.Detalles.Add(new DetalleCajaDto
                 {
                     BombonId = bombon.ProductoId,
                     NombreBombon = bombon.Nombre,
@@ -38,7 +43,7 @@ namespace BombonesApp2026.Windows.Classes
             detalle.Cantidad += cantidad;
 
         }
-        public (IReadOnlyCollection<DetalleCajaListDto> Detalles,
+        public (IReadOnlyCollection<DetalleCajaDto> Detalles,
             int Cantidad, decimal Precio, bool EsSurtida) ObtenerResumen()
         {
 
@@ -51,5 +56,53 @@ namespace BombonesApp2026.Windows.Classes
             return (detalles, cantidad, precio, esSurtida);
         }
 
+        internal void EliminarBombon(int bombonId)
+        {
+            if (_cajaDto.Detalles.Count == 1)
+            {
+                throw new InvalidOperationException(
+                    "El detalle debe tener al menos un bombón");
+            }
+            if (bombonId <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bombonId),
+                    "El ID del bombón debe ser mayor a cero");
+            }
+            var detalleEnCaja = _cajaDto.Detalles
+                .FirstOrDefault(d => d.BombonId == bombonId);
+            if(detalleEnCaja is null)
+            {
+                throw new InvalidOperationException(
+                    $"El bombón ID {bombonId} no forma parte del detalle");
+            }
+            _cajaDto.Detalles.Remove(detalleEnCaja);
+        }
+
+        internal void ModificarCantidadBombon(BombonListDto bombon,
+            int cantidad)
+        {
+            if (bombon is null)
+            {
+                throw new ArgumentNullException(nameof(bombon),
+                    "El bombón no puede ser nulo");
+            }
+            if (!bombon.Activo)
+            {
+                throw new InvalidOperationException("No se puede agregar un bombón inactivo");
+            }
+            if (cantidad <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(cantidad),
+                    "La cantidad debe ser mayor a cero");
+            }
+            var detalleEnCaja = _cajaDto.Detalles
+                .FirstOrDefault(d => d.BombonId == bombon.ProductoId);
+            if(detalleEnCaja is null)
+            {
+                throw new InvalidOperationException($"El bombón ID {bombon.ProductoId}" +
+                    $" no pertenece al detalle");
+            }
+            detalleEnCaja.Cantidad = cantidad;
+        }
     }
 }

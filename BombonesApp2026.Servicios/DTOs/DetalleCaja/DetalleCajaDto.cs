@@ -2,7 +2,7 @@
 
 namespace BombonesApp2026.Servicios.DTOs.DetalleCaja
 {
-    public class DetalleCajaListDto
+    public class DetalleCajaDto
     {
         public int BombonId { get; set; }
         public string NombreBombon { get; set; } = null!;

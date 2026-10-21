@@ -36,6 +36,7 @@
             btnCancelar = new Button();
             btnOk = new Button();
             errorProvider1 = new ErrorProvider(components);
+            txtBombon = new TextBox();
             ((System.ComponentModel.ISupportInitialize)nudCantidad).BeginInit();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             SuspendLayout();
@@ -103,11 +104,20 @@
             // 
             errorProvider1.ContainerControl = this;
             // 
+            // txtBombon
+            // 
+            txtBombon.Enabled = false;
+            txtBombon.Location = new Point(130, 33);
+            txtBombon.Name = "txtBombon";
+            txtBombon.Size = new Size(471, 23);
+            txtBombon.TabIndex = 25;
+            // 
             // frmManejarBombonCajaAe
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(644, 199);
+            Controls.Add(txtBombon);
             Controls.Add(nudCantidad);
             Controls.Add(label2);
             Controls.Add(cboBombones);
@@ -132,5 +142,6 @@
         private Button btnCancelar;
         private Button btnOk;
         private ErrorProvider errorProvider1;
+        private TextBox txtBombon;
     }
 }

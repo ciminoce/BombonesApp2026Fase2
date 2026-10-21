@@ -258,6 +258,7 @@
             btnEditarBombon.Text = "Editar Bombón";
             btnEditarBombon.TextImageRelation = TextImageRelation.ImageAboveText;
             btnEditarBombon.UseVisualStyleBackColor = true;
+            btnEditarBombon.Click += btnEditarBombon_Click;
             // 
             // btnBorrarBombon
             // 
@@ -269,6 +270,7 @@
             btnBorrarBombon.Text = "Borrar Bombón";
             btnBorrarBombon.TextImageRelation = TextImageRelation.ImageAboveText;
             btnBorrarBombon.UseVisualStyleBackColor = true;
+            btnBorrarBombon.Click += btnBorrarBombon_Click;
             // 
             // btnAgregarBombon
             // 
