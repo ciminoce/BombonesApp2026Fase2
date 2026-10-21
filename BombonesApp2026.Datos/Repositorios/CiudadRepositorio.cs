@@ -9,10 +9,18 @@ namespace BombonesApp2026.Datos.Repositorios
         public CiudadRepositorio(BombonesDbContext context) : base(context)
         {
         }
-
+        public override List<Ciudad> ObtenerTodos()
+        {
+            return _context.Ciudades
+                .Include(c => c.Provincia)
+                .OrderBy(c => c.Nombre)
+                .AsNoTracking()
+                .ToList();
+        }
         public List<Ciudad> ObtenerTodos(int? provinciaId = null)
         {
             return _context.Ciudades
+                .Include(c=>c.Provincia)
                 .OrderBy(c => c.Nombre)
                 .Where(c => c.ProvinciaId == provinciaId)
                 .AsNoTracking()
