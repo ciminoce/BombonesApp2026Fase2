@@ -3,21 +3,25 @@ using BombonesApp2026.Servicios.DTOs.Bombon;
 using BombonesApp2026.Servicios.Interfaces;
 using BombonesApp2026.Servicios.Mapeadores;
 using BombonesApp2026.Windows.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BombonesApp2026.Windows
 {
     public partial class frmBombones : Form
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly IBombonServicio _bombonServicio;
         private readonly ITipoBombonServicio _tipoServicio;
         private BindingSource _bindingSource = new BindingSource();
         private ServicioMensajes _servicioMensajes = new();
         //para paginar
         private EstadoNavegacion _estadoNavegacion = new(10);
-        public frmBombones(IBombonServicio bombonServicio,
+        public frmBombones(IServiceProvider serviceProvider,
+            IBombonServicio bombonServicio,
             ITipoBombonServicio tipoServicio)
         {
             InitializeComponent();
+            _serviceProvider= serviceProvider;
             _bombonServicio = bombonServicio;
             _tipoServicio = tipoServicio;
         }
@@ -56,7 +60,6 @@ namespace BombonesApp2026.Windows
 
         private void MostrarDatosEnGrilla(ResultadoPaginacionDto<BombonListDto> resultado)
         {
-            //_estadoNavegacion.Actualizar(resultado.TotalRegistros);
             
             _bindingSource.DataSource = resultado.Items;
             dgvDatos.DataSource = _bindingSource;
@@ -72,10 +75,10 @@ namespace BombonesApp2026.Windows
 
         private void tsbNuevo_Click(object sender, EventArgs e)
         {
-            using (frmBombonAe frm = new frmBombonAe(_tipoServicio) { Text = "Nueva Bombon" })
+            using (frmBombonAe frm =_serviceProvider.GetRequiredService<frmBombonAe>())
             {
-                DialogResult dr = frm.ShowDialog();
-                if (dr == DialogResult.Cancel) return;
+                frm.Text = "Nuevo Bombón";
+                if (frm.ShowDialog() == DialogResult.Cancel) return;
                 BombonEditDto? bombonEditDto = frm.GetBombon();
                 if (bombonEditDto == null) return;
                 try
@@ -151,11 +154,11 @@ namespace BombonesApp2026.Windows
             if (bombonDto is null) return;
             BombonEditDto? bombonEditDto = _bombonServicio.ObtenerParaEditar(bombonDto.ProductoId);
             if (bombonEditDto is null) return;
-            using (frmBombonAe frm = new frmBombonAe(_tipoServicio) { Text = "Editar Bombon " })
+            using (frmBombonAe frm = _serviceProvider.GetRequiredService<frmBombonAe>())
             {
+                frm.Text = "Editar Bombón";
                 frm.SetBombon(bombonEditDto);
-                DialogResult dr = frm.ShowDialog();
-                if (dr == DialogResult.Cancel) return;
+                if (frm.ShowDialog() == DialogResult.Cancel) return;
                 bombonEditDto = frm.GetBombon();
                 if (bombonEditDto is null) return;
                 try
@@ -250,8 +253,9 @@ namespace BombonesApp2026.Windows
             if (bombonDto is null) return;
             BombonEditDto? bombonEditDto = _bombonServicio.ObtenerParaEditar(bombonDto.ProductoId);
             if (bombonEditDto is null) return;
-            using (frmDetalleBombon frm = new frmDetalleBombon() { Text = $"Descripción del Bombón: {bombonEditDto.Nombre}" })
+            using (frmDetalleBombon frm = _serviceProvider.GetRequiredService<frmDetalleBombon>())
             {
+                frm.Text = $"Detalles del Bombón {bombonDto.Nombre}";
                 frm.SetDescripcion(bombonEditDto.Descripcion);
                 frm.ShowDialog(this);
             }

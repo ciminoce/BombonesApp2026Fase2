@@ -3,19 +3,23 @@ using Bombones2026.Servicios.DTOs.Paginacion;
 using BombonesApp2026.Servicios.Interfaces;
 using BombonesApp2026.Servicios.Servicios;
 using BombonesApp2026.Windows.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BombonesApp2026.Windows
 {
     public partial class frmFormasDePago : Form
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly IFormaDePagoServicio _formaDePagoServicio;
         private BindingSource _bindingSource = new BindingSource();
         private ServicioMensajes _servicioMensajes = new();
         private EstadoNavegacion _estadoNavegacion = new(10);
         //para paginar
-        public frmFormasDePago(IFormaDePagoServicio formaDePagoServicio)
+        public frmFormasDePago(IServiceProvider serviceProvider,
+            IFormaDePagoServicio formaDePagoServicio)
         {
             InitializeComponent();
+            _serviceProvider = serviceProvider;
             _formaDePagoServicio = formaDePagoServicio;
         }
         private void tsbCerrar_Click(object sender, EventArgs e)
@@ -42,10 +46,10 @@ namespace BombonesApp2026.Windows
 
         private void tsbNuevo_Click(object sender, EventArgs e)
         {
-            using (frmFormaDePagoAe frm = new frmFormaDePagoAe() { Text = "Nueva Forma de Pago" })
+            using (frmFormaDePagoAe frm =_serviceProvider.GetRequiredService<frmFormaDePagoAe>())
             {
-                DialogResult dr = frm.ShowDialog();
-                if (dr == DialogResult.Cancel) return;
+                frm.Text = "Nueva Forma de Pago";
+                if (frm.ShowDialog() == DialogResult.Cancel) return;
                 FormaDePagoEditDto? formaEditDto = frm.GetTipo();
                 if (formaEditDto == null) return;
                 try
@@ -94,15 +98,9 @@ namespace BombonesApp2026.Windows
 
         private void tsbBorrar_Click(object sender, EventArgs e)
         {
-            if (_bindingSource.Current == null)
-            {
-                MessageBox.Show("Debe seleccionar una fila de la grilla",
-                    "Advertencia",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-                return;
-            }
-            FormaDePagoListDto formaDePagoDto = (FormaDePagoListDto)_bindingSource.Current!;
+            FormaDePagoListDto? formaDePagoDto = _bindingSource
+                .ObtenerSeleccionado<FormaDePagoListDto>(_servicioMensajes);
+            if(formaDePagoDto is null) return;
             DialogResult dr = MessageBox.Show($"¿Desea borrar la forma de pago {formaDePagoDto.Nombre}?",
                 "Confirmar",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question,
@@ -125,22 +123,16 @@ namespace BombonesApp2026.Windows
 
         private void tsbEditar_Click(object sender, EventArgs e)
         {
-            if (_bindingSource.Current == null)
-            {
-                MessageBox.Show("Debe seleccionar una fila de la grilla",
-                    "Advertencia",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-                return;
-            }
-            FormaDePagoListDto formaDePagoDto = (FormaDePagoListDto)_bindingSource.Current!;
+            FormaDePagoListDto? formaDePagoDto = _bindingSource
+                .ObtenerSeleccionado<FormaDePagoListDto>(_servicioMensajes);
+            if (formaDePagoDto is null) return;
             FormaDePagoEditDto? formaDePagoEditDto = _formaDePagoServicio.ObtenerParaEditar(formaDePagoDto.FormaDePagoId);
             if (formaDePagoEditDto is null) return;
-            using (frmFormaDePagoAe frm = new frmFormaDePagoAe() { Text = "Editar Forma de Pago " })
+            using (frmFormaDePagoAe frm = _serviceProvider.GetRequiredService<frmFormaDePagoAe>())
             {
+                frm.Text = "Nueva Forma de Pago";
                 frm.SetFormaDePago(formaDePagoEditDto);
-                DialogResult dr = frm.ShowDialog();
-                if (dr == DialogResult.Cancel) return;
+                if (frm.ShowDialog() == DialogResult.Cancel) return;
                 formaDePagoEditDto = frm.GetFormaDePago();
                 if (formaDePagoEditDto is null) return;
                 try

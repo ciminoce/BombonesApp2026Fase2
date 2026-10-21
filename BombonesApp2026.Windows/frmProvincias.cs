@@ -3,20 +3,24 @@ using Bombones2026.Servicios.DTOs.Provincia;
 using BombonesApp2026.Servicios.Interfaces;
 using BombonesApp2026.Servicios.Servicios;
 using BombonesApp2026.Windows.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BombonesApp2026.Windows
 {
     //TODO: Buscar Provincia
     public partial class frmProvincias : Form
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly IProvinciaServicio _provinciaServicio;
         private BindingSource _bindingSource = new BindingSource();
         private ServicioMensajes _servicioMensajes = new();
         private EstadoNavegacion _estadoNavegacion = new(10);
         //para paginar
-        public frmProvincias(IProvinciaServicio servicio)
+        public frmProvincias(IServiceProvider serviceProvider,
+            IProvinciaServicio servicio)
         {
             InitializeComponent();
+            _serviceProvider=serviceProvider;
             _provinciaServicio = servicio;
         }
 
@@ -42,10 +46,10 @@ namespace BombonesApp2026.Windows
 
         private void tsbNuevo_Click(object sender, EventArgs e)
         {
-            using (frmProvinciaAe frm = new frmProvinciaAe() { Text = "Nueva Provincia" })
+            using (frmProvinciaAe frm = _serviceProvider.GetRequiredService<frmProvinciaAe>())
             {
-                DialogResult dr = frm.ShowDialog();
-                if (dr == DialogResult.Cancel) return;
+                frm.Text = "Nueva Provincia";
+                if (frm.ShowDialog() == DialogResult.Cancel) return;
                 ProvinciaEditDto? provinciaEditDto = frm.GetProvincia();
                 if (provinciaEditDto == null) return;
                 try
@@ -119,11 +123,11 @@ namespace BombonesApp2026.Windows
             if (provinciaDto is null) return;
             ProvinciaEditDto? provinciaEditDto = _provinciaServicio.ObtenerParaEditar(provinciaDto.ProvinciaId);
             if (provinciaEditDto is null) return;
-            using (frmProvinciaAe frm = new frmProvinciaAe() { Text = "Editar Provincia " })
+            using (frmProvinciaAe frm = _serviceProvider.GetRequiredService<frmProvinciaAe>())
             {
+                frm.Text = "Nueva Provincia";
                 frm.SetProvincia(provinciaEditDto);
-                DialogResult dr = frm.ShowDialog();
-                if (dr == DialogResult.Cancel) return;
+                if (frm.ShowDialog() == DialogResult.Cancel) return;
                 provinciaEditDto = frm.GetProvincia();
                 if (provinciaEditDto is null) return;
                 try

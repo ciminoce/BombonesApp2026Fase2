@@ -6,6 +6,8 @@ using BombonesApp2026.Servicios.Interfaces;
 using BombonesApp2026.Servicios.Servicios;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace BombonesApp2026.Windows
 {
@@ -34,45 +36,53 @@ namespace BombonesApp2026.Windows
                 configuration.GetConnectionString("Bombones")
                 ?? throw new InvalidOperationException(
                     "No se encontró la cadena de conexión.");
+            var servicios = new ServiceCollection();
 
-            var options =
-                new DbContextOptionsBuilder<BombonesDbContext>()
-                    .UseSqlServer(connectionString)
-                    .Options;
+            servicios
+                .AddDbContext<BombonesDbContext>(
+                    options => options.UseAzureSql(connectionString),
+                    ServiceLifetime.Scoped);
 
-            var context =
-                new BombonesDbContext(options);
-            IUnitOfWork unitOfWork = new UnitOfWork(context);
-            //instanciar repositorios y servicios aquí si es necesario
-            ITipoBombonRepositorio tipoBombonRepositorio = new TipoBombonRepositorio(context);
-            IFormaDePagoRepositorio formaDePagoRepositorio = new FormaDePagoRepositorio(context);
-            IRolRepositorio rolRepositorio = new RolRepositorio(context);
-            IProvinciaRepositorio provinciaRepositorio = new ProvinciaRepositorio(context);
-            ICiudadRepositorio ciudadRepositorio = new CiudadRepositorio(context);
-            ITransporteRepositorio transporteRepositorio = new TransporteRepositorio(context);
-            IBombonRepositorio bombonRepositorio = new BombonRepositorio(context);
-            IClienteRepositorio clienteRepositorio = new ClienteRepositorio(context);
-            ICajaRepositorio cajaRepositorio = new CajaRepositorio(context);
+            servicios.AddScoped<IUnitOfWork,  UnitOfWork>();
 
-            ITipoBombonServicio tipoBombonServicio = new TipoBombonServicio(tipoBombonRepositorio, unitOfWork);
-            IFormaDePagoServicio formaDePagoServicio = new FormaDePagoServicio(formaDePagoRepositorio, unitOfWork);
-            IRolServicio rolServicio = new RolServicio(rolRepositorio, unitOfWork);
-            IProvinciaServicio provinciaServicio = new ProvinciaServicio(provinciaRepositorio, unitOfWork);
-            ICiudadServicio ciudadServicio = new CiudadServicio(ciudadRepositorio, unitOfWork);
-            ITransporteServicio transporteServicio = new TransporteServicio(transporteRepositorio, unitOfWork);
-            IBombonServicio bombonServicio = new BombonServicio(bombonRepositorio, unitOfWork);
-            IClienteServicio clienteServicio = new ClienteServicio(clienteRepositorio, unitOfWork);
-            ICajaServicio cajaServicio = new CajaServicio(cajaRepositorio);
-            Application.Run(new frmPrincipal(
-                tipoBombonServicio,
-                formaDePagoServicio,
-                rolServicio,
-                provinciaServicio,
-                ciudadServicio,
-                transporteServicio,
-                bombonServicio,
-                clienteServicio,
-                cajaServicio));
+            servicios.AddScoped<ITipoBombonRepositorio, TipoBombonRepositorio>();
+            servicios.AddScoped<IFormaDePagoRepositorio, FormaDePagoRepositorio>();
+            servicios.AddScoped<IRolRepositorio, RolRepositorio>();
+            servicios.AddScoped<IProvinciaRepositorio, ProvinciaRepositorio>();
+            servicios.AddScoped<ICiudadRepositorio, CiudadRepositorio>();
+            servicios.AddScoped<ITransporteRepositorio, TransporteRepositorio>();
+            servicios.AddScoped<IBombonRepositorio, BombonRepositorio>();
+            servicios.AddScoped<IClienteRepositorio, ClienteRepositorio>();
+            servicios.AddScoped<ICajaRepositorio, CajaRepositorio>();
+
+            // Registrar Servicios
+            servicios.AddScoped<ITipoBombonServicio, TipoBombonServicio>();
+            servicios.AddScoped<IFormaDePagoServicio, FormaDePagoServicio>();
+            servicios.AddScoped<IRolServicio, RolServicio>();
+            servicios.AddScoped<IProvinciaServicio, ProvinciaServicio>();
+            servicios.AddScoped<ICiudadServicio, CiudadServicio>();
+            servicios.AddScoped<ITransporteServicio, TransporteServicio>();
+            servicios.AddScoped<IBombonServicio, BombonServicio>();
+            servicios.AddScoped<IClienteServicio, ClienteServicio>();
+            servicios.AddScoped<ICajaServicio, CajaServicio>();
+
+            // 🌟 4. REGISTRO AUTOMÁTICO DE FORMULARIOS POR REFLEXIÓN
+            // Esto busca todas las clases que heredan de Form en el proyecto actual y las registra como Transient
+            var assembly = Assembly.GetExecutingAssembly(); // O el assembly donde tengas tus formularios
+
+            var tiposFormularios = assembly.GetTypes()
+                .Where(t => typeof(Form).IsAssignableFrom(t) && !t.IsAbstract);
+
+            foreach (var tipoForm in tiposFormularios)
+            {
+                servicios.AddTransient(tipoForm);
+            }
+            var serviceProvider = servicios.BuildServiceProvider();
+
+            var frm = serviceProvider.GetRequiredService<frmPrincipal>();
+            frm.Text = "Sistema de Bombonería";
+            
+            Application.Run(frm);
         }
     }
 }

@@ -2,20 +2,24 @@
 using Bombones2026.Servicios.DTOs.Paginacion;
 using BombonesApp2026.Servicios.Interfaces;
 using BombonesApp2026.Windows.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BombonesApp2026.Windows
 {
     public partial class frmCiudades : Form
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly ICiudadServicio _ciudadServicio;
         private readonly IProvinciaServicio _provinciaServicio;
         private BindingSource _bindingSource = new BindingSource();
         private ServicioMensajes _servicioMensajes = new();
         private EstadoNavegacion _estadoNavegacion = new(10);
         //para paginar
-        public frmCiudades(ICiudadServicio ciuidadServicio, IProvinciaServicio provinciaServicio)
+        public frmCiudades(IServiceProvider serviceProvider,
+            ICiudadServicio ciuidadServicio, IProvinciaServicio provinciaServicio)
         {
             InitializeComponent();
+            _serviceProvider= serviceProvider;
             _ciudadServicio = ciuidadServicio;
             _provinciaServicio = provinciaServicio;
         }
@@ -54,7 +58,6 @@ namespace BombonesApp2026.Windows
 
         private void MostrarDatosEnGrilla(ResultadoPaginacionDto<CiudadListDto> resultado)
         {
-            //_estadoNavegacion.Actualizar(resultado.TotalRegistros);
 
             _bindingSource.DataSource = resultado.Items;
             dgvDatos.DataSource = _bindingSource;
@@ -70,10 +73,10 @@ namespace BombonesApp2026.Windows
 
         private void tsbNuevo_Click(object sender, EventArgs e)
         {
-            using (frmCiudadAe frm = new frmCiudadAe(_provinciaServicio) { Text = "Nueva Ciudad" })
+            using (frmCiudadAe frm = _serviceProvider.GetRequiredService<frmCiudadAe>())
             {
-                DialogResult dr = frm.ShowDialog();
-                if (dr == DialogResult.Cancel) return;
+                frm.Text = "Nueva Ciudad";
+                if (frm.ShowDialog() == DialogResult.Cancel) return;
                 CiudadEditDto? ciudadEditDto = frm.GetCiudad();
                 if (ciudadEditDto == null) return;
                 try
@@ -154,11 +157,11 @@ namespace BombonesApp2026.Windows
             if (ciudadDto is null) return;
             CiudadEditDto? ciudadEditDto = _ciudadServicio.ObtenerParaEditar(ciudadDto.CiudadId);
             if (ciudadEditDto is null) return;
-            using (frmCiudadAe frm = new frmCiudadAe(_provinciaServicio) { Text = "Editar Ciudad " })
+            using (frmCiudadAe frm = _serviceProvider.GetRequiredService<frmCiudadAe>())
             {
+                frm.Text = "Eidtar Ciudad";
                 frm.SetCiudad(ciudadEditDto);
-                DialogResult dr = frm.ShowDialog();
-                if (dr == DialogResult.Cancel) return;
+                if (frm.ShowDialog() == DialogResult.Cancel) return;
                 ciudadEditDto = frm.GetCiudad();
                 if (ciudadEditDto is null) return;
                 try

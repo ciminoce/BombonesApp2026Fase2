@@ -4,11 +4,13 @@ using BombonesApp2026.Servicios.Interfaces;
 using BombonesApp2026.Servicios.Mapeadores;
 using BombonesApp2026.Servicios.Servicios;
 using BombonesApp2026.Windows.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BombonesApp2026.Windows
 {
     public partial class frmClientes : Form
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly IClienteServicio _clienteServicio;
         private readonly IProvinciaServicio _provinciaServicio;
         private readonly ICiudadServicio _ciudadServicio;
@@ -16,10 +18,12 @@ namespace BombonesApp2026.Windows
         private ServicioMensajes _servicioMensajes = new();
         private EstadoNavegacion _estadoNavegacion = new(10);
         //para paginar
-        public frmClientes(IClienteServicio clienteServicio, IProvinciaServicio provinciaServicio,
+        public frmClientes(IServiceProvider serviceProvider,
+            IClienteServicio clienteServicio, IProvinciaServicio provinciaServicio,
             ICiudadServicio ciudadServicio)
         {
             InitializeComponent();
+            _serviceProvider = serviceProvider;
             _clienteServicio = clienteServicio;
             _provinciaServicio = provinciaServicio;
             _ciudadServicio = ciudadServicio;
@@ -61,7 +65,6 @@ namespace BombonesApp2026.Windows
 
         private void MostrarDatosEnGrilla(ResultadoPaginacionDto<ClienteListDto> resultado)
         {
-            //_estadoNavegacion.Actualizar(resultado.TotalRegistros);
 
             _bindingSource.DataSource = resultado.Items;
             dgvDatos.DataSource = _bindingSource;
@@ -77,11 +80,10 @@ namespace BombonesApp2026.Windows
 
         private void tsbNuevo_Click(object sender, EventArgs e)
         {
-            using (frmClienteAe frm = new frmClienteAe(_provinciaServicio,
-                _ciudadServicio) { Text = "Nuevo Cliente" })
+            using (frmClienteAe frm =_serviceProvider.GetRequiredService<frmClienteAe>())
             {
-                DialogResult dr = frm.ShowDialog();
-                if (dr == DialogResult.Cancel) return;
+                frm.Text = "Nuevo Cliente";
+                if (frm.ShowDialog() == DialogResult.Cancel) return;
                 ClienteEditDto? clienteEditDto = frm.GetCliente();
                 if (clienteEditDto == null) return;
                 try
@@ -157,12 +159,11 @@ namespace BombonesApp2026.Windows
             if (clienteDto is null) return;
             ClienteEditDto? clienteEditDto = _clienteServicio.ObtenerParaEditar(clienteDto.ClienteId);
             if (clienteEditDto is null) return;
-            using (frmClienteAe frm = new frmClienteAe(_provinciaServicio,
-                _ciudadServicio) { Text = "Editar  " })
+            using (frmClienteAe frm = _serviceProvider.GetRequiredService<frmClienteAe>())
             {
+                frm.Text = "Editar Cliente";
                 frm.SetCliente(clienteEditDto);
-                DialogResult dr = frm.ShowDialog();
-                if (dr == DialogResult.Cancel) return;
+                if (frm.ShowDialog() == DialogResult.Cancel) return;
                 clienteEditDto = frm.GetCliente();
                 if (clienteEditDto is null) return;
                 try

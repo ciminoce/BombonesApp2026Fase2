@@ -2,19 +2,23 @@
 using BombonesApp2026.Servicios.DTOs.Caja;
 using BombonesApp2026.Servicios.Interfaces;
 using BombonesApp2026.Windows.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BombonesApp2026.Windows
 {
     public partial class frmCajas : Form
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly ICajaServicio _cajaServicio;
         private readonly IBombonServicio _bombonServicio;
         private BindingSource _bindingSource = new BindingSource();
         private ServicioMensajes _servicioMensajes = new();
         private EstadoNavegacion _estadoNavegacion = new(10);
-        public frmCajas(ICajaServicio cajaServicio, IBombonServicio bombonServicio)
+        public frmCajas(IServiceProvider serviceProvider,
+            ICajaServicio cajaServicio, IBombonServicio bombonServicio)
         {
             InitializeComponent();
+            _serviceProvider=serviceProvider;
             _cajaServicio = cajaServicio;
             _bombonServicio = bombonServicio;
             dgvDatos.DataSource = _bindingSource;
@@ -54,7 +58,6 @@ namespace BombonesApp2026.Windows
 
         private void MostrarDatosEnGrilla(ResultadoPaginacionDto<CajaListDto> resultado)
         {
-            //_estadoNavegacion.Actualizar(resultado.TotalRegistros);
 
             _bindingSource.DataSource = resultado.Items;
             dgvDatos.DataSource = _bindingSource;
@@ -119,10 +122,10 @@ namespace BombonesApp2026.Windows
         }
         private void tsbNuevo_Click(object sender, EventArgs e)
         {
-            using (frmCajaAe frm = new frmCajaAe(_bombonServicio) { Text = "Nueva Caja" })
+            using (frmCajaAe frm = _serviceProvider.GetRequiredService<frmCajaAe>())
             {
-                DialogResult dr = frm.ShowDialog();
-                if (dr == DialogResult.Cancel) return;
+                frm.Text = "Nueva Caja";
+                if (frm.ShowDialog() == DialogResult.Cancel) return;
 
             }
             //using (frmCajaAe frm = new frmCajaAe() { Text = "Nueva Caja" })
@@ -291,8 +294,9 @@ namespace BombonesApp2026.Windows
             if (cajaDto is null) return;
             CajaDetailDto? cajaDetailDto = _cajaServicio.ObtenerCajaConDetalles(cajaDto.ProductoId);
             if (cajaDetailDto is null) return;
-            using (frmDetallesCaja frm = new frmDetallesCaja() { Text = "Detalle de Caja" })
+            using (frmDetallesCaja frm = _serviceProvider.GetRequiredService<frmDetallesCaja>())
             {
+                frm.Text = "Detalles de Caja";
                 frm.SetCaja(cajaDetailDto);
                 frm.ShowDialog();
             }
