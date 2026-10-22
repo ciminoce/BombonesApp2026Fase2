@@ -1,6 +1,8 @@
 ﻿using Bombones2026.Servicios.DTOs.Paginacion;
 using BombonesApp2026.Servicios.DTOs.Caja;
+using BombonesApp2026.Servicios.Excepciones;
 using BombonesApp2026.Servicios.Interfaces;
+using BombonesApp2026.Servicios.Mapeadores;
 using BombonesApp2026.Windows.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -127,53 +129,51 @@ namespace BombonesApp2026.Windows
                 frm.Text = "Nueva Caja";
                 if (frm.ShowDialog() == DialogResult.Cancel) return;
 
+                CajaEditDto? cajaEditDto = frm.GetCaja();
+                if (cajaEditDto == null) return;
+                try
+                {
+                    CajaCreateDto cajaCreateDto = cajaEditDto.ToCreateDto();
+                    int nuevoId = _cajaServicio.Agregar(cajaCreateDto);
+                    bool sePuedeVer = string.IsNullOrWhiteSpace(txtBuscar.Text) ||
+                        cajaCreateDto.Nombre.Contains(txtBuscar.Text);
+                    if (sePuedeVer)
+                    {
+                        _estadoNavegacion.PaginaActual = _cajaServicio
+                            .ObtenerPaginaRegistro(cajaCreateDto.Nombre, _estadoNavegacion.CantidadPorPagina,
+                            _estadoNavegacion.FiltroActivo, _estadoNavegacion.TextoBuscar);
+
+                    }
+                    RecargarGrilla();
+                    if (sePuedeVer)
+                    {
+                        var nuevoTipo = _bindingSource.List
+                            .Cast<CajaListDto>()
+                            .FirstOrDefault(tb => tb.ProductoId == nuevoId);
+                        if (nuevoTipo is null) return;
+                        _bindingSource.Position = _bindingSource.IndexOf(nuevoTipo);
+                        _servicioMensajes.Informacion("Registro agregado");
+
+                    }
+                    else
+                    {
+                        _servicioMensajes.Informacion($"Caja {cajaCreateDto.Nombre} agregada." +
+                            $"\nNo se muestra por condición de filtrado o búsqueda");
+                    }
+                }
+                catch(ValidarCajaExcepcion ex)
+                {
+                    _servicioMensajes.Errores(ex.Errores, "Lista de Errores");
+                }
+                catch(ArgumentException ex)
+                {
+                    _servicioMensajes.Error(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    _servicioMensajes.Error(ex.Message);
+                }
             }
-            //using (frmCajaAe frm = new frmCajaAe() { Text = "Nueva Caja" })
-            //{
-            //    DialogResult dr = frm.ShowDialog();
-            //    if (dr == DialogResult.Cancel) return;
-            //    CajaEditDto? cajaEditDto = frm.GetCaja();
-            //    if (cajaEditDto == null) return;
-            //    try
-            //    {
-            //        CajaCreateDto cajaCreateDto = cajaEditDto.ToCreateDto();
-            //        int nuevoId = _cajaServicio.Agregar(cajaCreateDto);
-            //        bool sePuedeVer = string.IsNullOrWhiteSpace(txtBuscar.Text) ||
-            //            cajaCreateDto.Nombre.Contains(txtBuscar.Text);
-            //        if (sePuedeVer)
-            //        {
-            //            _estadoNavegacion.PaginaActual = _cajaServicio
-            //                .ObtenerPaginaRegistro(cajaCreateDto.Nombre, _estadoNavegacion.CantidadPorPagina,
-            //                _estadoNavegacion.FiltroActivo, _estadoNavegacion.TextoBuscar);
-
-            //        }
-            //        RecargarGrilla();
-            //        if (sePuedeVer)
-            //        {
-            //            var nuevoTipo = _bindingSource.List
-            //                .Cast<CajaListDto>()
-            //                .FirstOrDefault(tb => tb.ProductoId == nuevoId);
-            //            if (nuevoTipo is null) return;
-            //            _bindingSource.Position = _bindingSource.IndexOf(nuevoTipo);
-            //            MessageBox.Show("Caja Agregada",
-            //                "Mensaje", MessageBoxButtons.OK,
-            //                MessageBoxIcon.Information);
-
-            //        }
-            //        else
-            //        {
-            //            MessageBox.Show($"Caja {cajaCreateDto.Nombre} agregada.\nNo se muestra por condición de filtrado o búsqueda",
-            //                "Confirmación", MessageBoxButtons.OK,
-            //                MessageBoxIcon.Information);
-            //        }
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        MessageBox.Show(ex.Message,
-            //                    "Error", MessageBoxButtons.OK,
-            //                    MessageBoxIcon.Error);
-            //    }
-            //}
         }
 
 

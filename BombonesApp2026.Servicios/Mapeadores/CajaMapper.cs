@@ -26,6 +26,7 @@ namespace BombonesApp2026.Servicios.Mapeadores
                 Nombre = cajaDto.Nombre,
                 Descripcion=cajaDto.Descripcion,
                 Stock = cajaDto.Stock,
+                Detalles=cajaDto.Detalles
             };
         }
         public static Caja ToEntidad(this CajaCreateDto cajaDto)

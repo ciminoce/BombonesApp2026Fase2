@@ -104,5 +104,10 @@ namespace BombonesApp2026.Windows.Classes
             }
             detalleEnCaja.Cantidad = cantidad;
         }
+
+        internal List<DetalleCajaDto> ObtenerDetalles()
+        {
+            return _cajaDto.Detalles;
+        }
     }
 }

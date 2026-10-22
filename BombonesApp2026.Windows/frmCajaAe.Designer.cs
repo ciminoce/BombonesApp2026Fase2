@@ -117,7 +117,7 @@
             // txtDescripcion
             // 
             txtDescripcion.Location = new Point(140, 57);
-            txtDescripcion.MaxLength = 300;
+            txtDescripcion.MaxLength = 250;
             txtDescripcion.Multiline = true;
             txtDescripcion.Name = "txtDescripcion";
             txtDescripcion.Size = new Size(334, 54);
@@ -153,9 +153,11 @@
             // nudStock
             // 
             nudStock.Location = new Point(140, 120);
+            nudStock.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudStock.Name = "nudStock";
             nudStock.Size = new Size(134, 23);
             nudStock.TabIndex = 12;
+            nudStock.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // chkActivo
             // 
