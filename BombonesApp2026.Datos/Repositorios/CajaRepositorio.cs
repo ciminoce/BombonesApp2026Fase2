@@ -1,11 +1,10 @@
-﻿using BombonesApp2026.Datos;
-using BombonesApp2026.Datos.Interfaces;
+﻿using BombonesApp2026.Datos.Interfaces;
 using BombonesApp2026.Entidades.Entidades;
 using Microsoft.EntityFrameworkCore;
 
 namespace BombonesApp2026.Datos.Repositorios
 {
-    public class CajaRepositorio :Repositorio<Caja>, ICajaRepositorio
+    public class CajaRepositorio : Repositorio<Caja>, ICajaRepositorio
     {
         public CajaRepositorio(BombonesDbContext context) : base(context)
         {
@@ -17,8 +16,8 @@ namespace BombonesApp2026.Datos.Repositorios
         {
             IQueryable<Caja> query = _context
                 .Cajas
-                .Include(c=>c.Detalles)
-                .ThenInclude(d=>d.Bombon)
+                .Include(c => c.Detalles)
+                .ThenInclude(d => d.Bombon)
                 .AsNoTracking();
             if (!string.IsNullOrWhiteSpace(textoBuscar))
             {
@@ -51,14 +50,14 @@ namespace BombonesApp2026.Datos.Repositorios
             return _context.Cajas.Any(b => b.Nombre == Caja.Nombre
                 && b.ProductoId != Caja.ProductoId);
         }
-
-        public override Caja? ObtenerPorId(int ProductoId)
+        //TODO: Ver usar el mismo para trackear o no
+        public override Caja? ObtenerPorId(int productoId)
         {
             return _context.Cajas
-                .Include(c=>c.Detalles)
-                .ThenInclude(d=>d.Bombon)
+                .Include(c => c.Detalles)
+                .ThenInclude(d => d.Bombon)
                 .AsNoTracking()
-                .FirstOrDefault(b => b.ProductoId == ProductoId);
+                .FirstOrDefault(b => b.ProductoId == productoId);
         }
 
 
@@ -67,6 +66,14 @@ namespace BombonesApp2026.Datos.Repositorios
             return _context.Cajas
                 .AsNoTracking()
                 .OrderBy(c => c.Nombre).ToList();
+        }
+
+        public Caja? ObtenerCajaConDetalles(int productoId)
+        {
+            return _context.Cajas
+                .Include(c => c.Detalles)
+                .ThenInclude(d => d.Bombon)
+                .FirstOrDefault(b => b.ProductoId == productoId);
         }
     }
 }

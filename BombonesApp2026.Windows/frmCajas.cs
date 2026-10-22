@@ -179,44 +179,23 @@ namespace BombonesApp2026.Windows
 
         private void tsbBorrar_Click(object sender, EventArgs e)
         {
-            //if (_bindingSource.Current == null)
-            //{
-            //    MessageBox.Show("Debe seleccionar una fila de la grilla",
-            //        "Advertencia",
-            //        MessageBoxButtons.OK,
-            //        MessageBoxIcon.Warning);
-            //    return;
-            //}
 
-            //CajaListDto cajaDto = (CajaListDto)_bindingSource.Current!;
-            //DialogResult dr = MessageBox.Show($"¿Desea borrar la caja {cajaDto.Nombre}?",
-            //    "Confirmar",
-            //    MessageBoxButtons.YesNo, MessageBoxIcon.Question,
-            //    MessageBoxDefaultButton.Button2);
-            //if (dr == DialogResult.No) return;
-            //try
-            //{
-            //    _cajaServicio.Borrar(cajaDto.ProductoId);
-            //    RecargarGrilla();
-            //    if (_estadoNavegacion.PaginaActual > totalPaginas && totalPaginas > 0)
-            //    {
-            //        _estadoNavegacion.PaginaActual = totalPaginas;
-            //        RecargarGrilla();
-            //    }
-            //    MessageBox.Show("Caja eliminada",
-            //        "Mensaje",
-            //        MessageBoxButtons.OK,
-            //        MessageBoxIcon.Information);
-            //}
-            //catch (Exception ex)
-            //{
+            CajaListDto? cajaDto = _bindingSource
+                .ObtenerSeleccionado<CajaListDto>(_servicioMensajes);
+            if (cajaDto is null) return;
+            if (!_servicioMensajes.Confirmar($"¿Desea borrar la caja {cajaDto.Nombre}?")) return;
+            try
+            {
+                _cajaServicio.Borrar(cajaDto.ProductoId);
+                RecargarGrilla();
+                _servicioMensajes.Informacion("Registro eliminado");
+            }
+            catch (Exception ex)
+            {
 
-            //    MessageBox.Show(ex.Message,
-            //        "Error",
-            //        MessageBoxButtons.OK,
-            //        MessageBoxIcon.Error);
+                _servicioMensajes.Error(ex.Message);
 
-            //}
+            }
 
         }
 

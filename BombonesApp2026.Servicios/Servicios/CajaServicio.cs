@@ -201,8 +201,8 @@ namespace BombonesApp2026.Servicios.Servicios
                 throw new ArgumentException(nameof(productoId),
                     "El ID debe ser positivo");
             }
-            var bombon = _cajaRepositorio.ObtenerPorId(productoId);
-            if (bombon is null)
+            var caja = _cajaRepositorio.ObtenerCajaConDetalles(productoId);
+            if (caja is null)
             {
                 throw new KeyNotFoundException($"No se encontró una caja con el ID {productoId}");
             }
@@ -210,11 +210,12 @@ namespace BombonesApp2026.Servicios.Servicios
             try
             {
                 _cajaRepositorio.Borrar(productoId);
+                _unitOfWork.Guardar();
             }
             catch (Exception ex)
             {
 
-                throw new Exception($"Error al intentar borrar un bombon: {ex.Message}");
+                throw new Exception($"Error al intentar borrar una caja: {ex.Message}");
             }
         }
 
