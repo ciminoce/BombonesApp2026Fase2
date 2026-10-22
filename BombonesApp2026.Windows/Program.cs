@@ -37,7 +37,7 @@ namespace BombonesApp2026.Windows
                 ?? throw new InvalidOperationException(
                     "No se encontró la cadena de conexión.");
             var servicios = new ServiceCollection();
-
+            //TODO: Pasar todo a una capa
             servicios
                 .AddDbContext<BombonesDbContext>(
                     options => options.UseAzureSql(connectionString),

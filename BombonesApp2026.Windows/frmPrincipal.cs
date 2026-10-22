@@ -4,6 +4,7 @@ namespace BombonesApp2026.Windows
 {
     public partial class frmPrincipal : Form
     {
+        //TODO:Ver clase para cerrar el formulario
         private readonly IServiceScopeFactory _scopeFactory;
         public frmPrincipal(IServiceScopeFactory scopeFactory)
         {
