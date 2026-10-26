@@ -14,7 +14,7 @@ namespace BombonesApp2026.Windows
         private readonly IBombonServicio _bombonServicio;
         private ServicioMensajes _servicioMensajes = new();
         private BindingSource _bindingSource = new BindingSource();
-        private BindingList<DetalleCajaDto> _listaDetalles = new BindingList<DetalleCajaDto>();
+        //private BindingList<DetalleCajaDto> _listaDetalles = new BindingList<DetalleCajaDto>();
         private CajaEditDto? _cajaDto;
         private EditorCaja _editorCaja = null!;
         public frmCajaAe(IServiceProvider serviceProvider,
@@ -23,7 +23,7 @@ namespace BombonesApp2026.Windows
             InitializeComponent();
             _serviceProvider = serviceProvider;
             _bombonServicio = bombonServicio;
-            _bindingSource.DataSource = _listaDetalles;
+            //_bindingSource.DataSource = _listaDetalles;
             dgvDatos.DataSource = _bindingSource;
         }
         protected override void OnLoad(EventArgs e)
@@ -35,7 +35,24 @@ namespace BombonesApp2026.Windows
                 chkActivo.Checked = true;
                 chkActivo.Enabled = false;
             }
+            else
+            {
+                txtNombreCaja.Text = _cajaDto.Nombre;
+                txtDescripcion.Text = _cajaDto.Descripcion;
+                nudStock.Value = _cajaDto.Stock;
+                chkActivo.Checked = _cajaDto.Activo;
+                _bindingSource.DataSource = _cajaDto.Detalles;
+                CalcularYMostrarDatos(_cajaDto.Detalles);
+            }
         }
+
+        private void CalcularYMostrarDatos(List<DetalleCajaDto> detalles)
+        {
+            txtCantidadBombones.Text = detalles.Sum(d => d.Cantidad).ToString();
+            txtSurtida.Text = detalles.Count > 1 ? "Sí" : "No";
+            txtPrecio.Text = (Math.Ceiling(detalles.Sum(d => d.Subtotal) * 1.20m / 100 )* 100).ToString();
+        }
+
         public CajaEditDto? GetCaja()
         {
             return _cajaDto;
@@ -118,11 +135,12 @@ namespace BombonesApp2026.Windows
         private void MostrarDatos((IReadOnlyCollection<DetalleCajaDto> Detalles,
             int Cantidad, decimal Precio, bool EsSurtida) resumen)
         {
-            _listaDetalles.Clear();
-            foreach (var item in resumen.Detalles)
-            {
-                _listaDetalles.Add(item);
-            }
+            //_listaDetalles.Clear();
+            //foreach (var item in resumen.Detalles)
+            //{
+            //    _listaDetalles.Add(item);
+            //}
+            _bindingSource.DataSource = resumen.Detalles;
             txtCantidadBombones.Text = resumen.Cantidad.ToString();
             txtPrecio.Text = resumen.Precio.ToString();
             txtSurtida.Text = resumen.EsSurtida ? "Sí" : "No";

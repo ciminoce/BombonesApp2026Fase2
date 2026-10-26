@@ -54,5 +54,24 @@
             }
             detalle.Cantidad += cantidad;
         }
+
+        public void EliminarBombon(int bombonId)
+        {
+            if (_detalles.Count == 1)
+            {
+                throw new InvalidOperationException("La caja debe tener al menos 1 detalle");
+            }
+            if (bombonId <= 0)
+            {
+                throw new ArgumentOutOfRangeException("El ID del bombón debe ser mayor a cero");
+            }
+            var detalle = _detalles.FirstOrDefault(d => d.BombonId == bombonId);
+            if(detalle is null)
+            {
+                throw new InvalidOperationException($"El Bombón ID {bombonId}" +
+                    " no pertenece al detalle de la caja");
+            }
+            _detalles.Remove(detalle);
+        }
     }
 }

@@ -201,69 +201,56 @@ namespace BombonesApp2026.Windows
 
         private void tsbEditar_Click(object sender, EventArgs e)
         {
-            //if (_bindingSource.Current == null)
-            //{
-            //    MessageBox.Show("Debe seleccionar una fila de la grilla",
-            //        "Advertencia",
-            //        MessageBoxButtons.OK,
-            //        MessageBoxIcon.Warning);
-            //    return;
-            //}
 
-            //CajaListDto cajaDto = (CajaListDto)_bindingSource.Current!;
-            //CajaEditDto? cajaEditDto = _cajaServicio.ObtenerParaEditar(cajaDto.ProductoId);
-            //if (cajaEditDto is null) return;
-            //using (frmCajaAe frm = new frmCajaAe() { Text = "Editar Caja " })
-            //{
-            //    frm.SetCaja(cajaEditDto);
-            //    DialogResult dr = frm.ShowDialog();
-            //    if (dr == DialogResult.Cancel) return;
-            //    cajaEditDto = frm.GetCaja();
-            //    if (cajaEditDto is null) return;
-            //    try
-            //    {
-            //        _cajaServicio.Editar(cajaEditDto);
-            //        int editadoId = cajaEditDto.ProductoId;
-            //        bool sePuedeVer = string.IsNullOrWhiteSpace(txtBuscar.Text) ||
-            //            cajaEditDto.Nombre.ToLower().Contains(txtBuscar.Text.ToLower());
+            CajaListDto? cajaDto = _bindingSource
+                .ObtenerSeleccionado<CajaListDto>(_servicioMensajes);
+            if (cajaDto is null) return;
+            CajaEditDto? cajaEditDto = _cajaServicio.ObtenerCajaConDetallesParaEditar(cajaDto.ProductoId);
+            if (cajaEditDto is null) return;
+            using (frmCajaAe frm = _serviceProvider.GetRequiredService<frmCajaAe>())
+            {
+                frm.Text = "Editar Caja";
+                frm.SetCaja(cajaEditDto);
+                if (frm.ShowDialog() == DialogResult.Cancel) return;
+                cajaEditDto = frm.GetCaja();
+                if (cajaEditDto is null) return;
+                try
+                {
+                    _cajaServicio.Editar(cajaEditDto);
+                    int editadoId = cajaEditDto.ProductoId;
+                    bool sePuedeVer = string.IsNullOrWhiteSpace(txtBuscar.Text) ||
+                        cajaEditDto.Nombre.ToLower().Contains(txtBuscar.Text.ToLower());
 
-            //        if (sePuedeVer)
-            //        {
-            //            _estadoNavegacion.PaginaActual = _cajaServicio.ObtenerPaginaRegistro(cajaEditDto.Nombre,
-            //                _estadoNavegacion.CantidadPorPagina, _estadoNavegacion.FiltroActivo, _estadoNavegacion.TextoBuscar);
-            //        }
-            //        RecargarGrilla();
-            //        if (sePuedeVer)
-            //        {
+                    if (sePuedeVer)
+                    {
+                        _estadoNavegacion.PaginaActual = _cajaServicio.ObtenerPaginaRegistro(cajaEditDto.Nombre,
+                            _estadoNavegacion.CantidadPorPagina, _estadoNavegacion.FiltroActivo, _estadoNavegacion.TextoBuscar);
+                    }
+                    RecargarGrilla();
+                    if (sePuedeVer)
+                    {
 
-            //            var editadoTipo = _bindingSource.List
-            //                .Cast<CajaListDto>()
-            //                .FirstOrDefault(tb => tb.ProductoId == editadoId);
+                        var editadoTipo = _bindingSource.List
+                            .Cast<CajaListDto>()
+                            .FirstOrDefault(tb => tb.ProductoId == editadoId);
 
-            //            _bindingSource.Position = _bindingSource.IndexOf(editadoTipo);
-            //            MessageBox.Show("Caja editada",
-            //                "Mensaje",
-            //                MessageBoxButtons.OK,
-            //                MessageBoxIcon.Information);
-            //        }
-            //        else
-            //        {
-            //            MessageBox.Show($"Caja {cajaEditDto.Nombre} editada.\nNo se muestra por condición de filtrado o búsqueda",
-            //                "Confirmación",
-            //                MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //        }
+                        _bindingSource.Position = _bindingSource.IndexOf(editadoTipo);
+                        _servicioMensajes.Informacion("Registro editado");
+                    }
+                    else
+                    {
+                        _servicioMensajes.Informacion($"Caja {cajaEditDto.Nombre} editada." +
+                            $"\nNo se muestra por condición de filtrado o búsqueda");
+                    }
 
-            //    }
-            //    catch (Exception ex)
-            //    {
+                }
+                catch (Exception ex)
+                {
 
-            //        MessageBox.Show(ex.Message,
-            //             "Error",
-            //             MessageBoxButtons.OK,
-            //             MessageBoxIcon.Error);
+                    _servicioMensajes.Error(ex.Message);
 
-            //    }
-            //}
+                }
+            }
 
         }
 

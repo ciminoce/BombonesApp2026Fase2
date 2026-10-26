@@ -58,7 +58,9 @@ namespace BombonesApp2026.Servicios.Mapeadores
                 Nombre = caja.Nombre,
                 Descripcion = caja.Descripcion,
                 Stock = caja.Stock,
-                Activo = caja.Activo
+                Activo = caja.Activo,
+                Detalles=caja.Detalles
+                    .Select(d=>d.ToDto()).ToList()
             };
         }
         public static CajaDetailDto ToDetailDto(this Caja caja)

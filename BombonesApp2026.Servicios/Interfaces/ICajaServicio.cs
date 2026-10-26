@@ -9,6 +9,7 @@ namespace BombonesApp2026.Servicios.Interfaces
         void Borrar(int productoId);
         void Editar(CajaEditDto cajaEditDto);
         CajaDetailDto? ObtenerCajaConDetalles(int productoId);
+        CajaEditDto? ObtenerCajaConDetallesParaEditar(int productoId);
         ResultadoPaginacionDto<CajaListDto> ObtenerPagina(int paginaActual, int cantidadPorPagina, bool? filtroActivo = null, string? textoBuscar = null);
         int ObtenerPaginaRegistro(string nombre, int cantidadPorPagina, bool? filtroActivo, string? textoBuscar);
         CajaEditDto? ObtenerParaEditar(int productoId);

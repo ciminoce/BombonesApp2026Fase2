@@ -75,5 +75,10 @@ namespace BombonesApp2026.Datos.Repositorios
                 .ThenInclude(d => d.Bombon)
                 .FirstOrDefault(b => b.ProductoId == productoId);
         }
+
+        public void EliminarDetalle(DetalleCaja itemEnCaja)
+        {
+            _context.Set<DetalleCaja>().Remove(itemEnCaja);
+        }
     }
 }

@@ -142,16 +142,107 @@ namespace BombonesApp2026.Servicios.Servicios
 
         public void Editar(CajaEditDto cajaDto)
         {
-            if (cajaDto == null)
-                throw new ArgumentNullException(nameof(cajaDto), "La forma de pago no puede ser nula");
-            if (cajaDto.ProductoId == 0)
+            try
             {
-                throw new ArgumentException(nameof(cajaDto.ProductoId), "El ID del bombón debe ser mayor a 0");
-            }
-            Caja caja = cajaDto.ToEntidad();
-            if (_cajaRepositorio.ExisteCaja(caja)) throw new InvalidOperationException($"Ya existe una caja {caja.Nombre}");
-            _cajaRepositorio.Editar(caja, cajaDto.ProductoId);
+                var errores = new List<string>();
+                errores.AddRange(ValidarCajaEditDto(cajaDto));
+                errores.AddRange(ValidarDetalles(cajaDto.Detalles));
+                errores.AddRange(ValidarBombones(cajaDto.Detalles));
+                if (errores.Any())
+                {
+                    throw new ValidarCajaExcepcion(errores);
+                }
+                Caja? caja = _cajaRepositorio
+                    .ObtenerCajaConDetalles(cajaDto.ProductoId);
+                if (caja is null)
+                {
+                    throw new ArgumentException(nameof(cajaDto.ProductoId),
+                        $"La caja ID {cajaDto.ProductoId} no existe");
+                }
+                caja.Nombre = cajaDto.Nombre;
+                caja.Descripcion = cajaDto.Descripcion;
+                caja.Stock = cajaDto.Stock;
+                caja.Activo = cajaDto.Activo;
 
+                if (_cajaRepositorio.ExisteCaja(caja))
+                    throw new InvalidOperationException($"Ya existe una caja" +
+                        $" {caja.Nombre}");
+                ActualizarDetalles(caja, cajaDto.Detalles);
+
+                _unitOfWork.Guardar();
+
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"Error al intentar guardar la caja {ex.Message}");
+            }
+        }
+
+        private IEnumerable<string> ValidarCajaEditDto(CajaEditDto cajaDto)
+        {
+            var errores = new List<string>();
+            if (string.IsNullOrEmpty(cajaDto.Nombre))
+            {
+                errores.Add("El nombre de la caja es requerido");
+            }
+            else if (cajaDto.Nombre.Length > 100)
+            {
+                errores.Add("El nombre de la caja no puede superar los 100 caracteres");
+            }
+            if (!string.IsNullOrEmpty(cajaDto.Descripcion) &&
+                cajaDto.Descripcion.Length > 250)
+            {
+                errores.Add("La descripción no puede superar los 250 caracteres");
+            }
+            if (cajaDto.Stock <= 0)
+            {
+                errores.Add("El stock debe ser positivo");
+            }
+            if (cajaDto.Detalles.Count == 0)
+            {
+                errores.Add("La caja no tiene detalles");
+            }
+            return errores;
+
+        }
+
+        private void ActualizarDetalles(Caja caja, 
+            List<DetalleCajaDto> detalleDto)
+        {
+            //1.Borrar detalles que no están
+            foreach (var itemEnCaja in caja.Detalles.ToList())
+            {
+                var existe = detalleDto
+                    .Any(d => d.BombonId == itemEnCaja.BombonId);
+                if (!existe)
+                {
+                    caja.EliminarBombon(itemEnCaja.BombonId);
+                    _cajaRepositorio.EliminarDetalle(itemEnCaja);
+                }
+            }
+            //2.Modificar lo existente
+            foreach (var itemDetalleDto in detalleDto)
+            {
+                var detalleEnCaja = caja.Detalles
+                    .FirstOrDefault(d => d.BombonId == itemDetalleDto.BombonId);
+                if (detalleEnCaja is null) continue;
+                detalleEnCaja.Cantidad = itemDetalleDto.Cantidad;
+            }
+            //3.Agregar lo nuevo
+            foreach (var itemDetalleDto in detalleDto)
+            {
+                var detalleEnCaja = caja.Detalles
+                    .FirstOrDefault(d => d.BombonId == itemDetalleDto.BombonId);
+                if (detalleEnCaja is not null) continue;
+                var bombon = _bombonRepositorio.ObtenerPorId(itemDetalleDto.BombonId);
+                if (bombon is null)
+                    throw new ArgumentNullException(
+                        $"Bombon ID {itemDetalleDto.BombonId} no encontrado");
+                caja.AgregarBombon(bombon, itemDetalleDto.Cantidad);
+
+            }
         }
 
         public int ObtenerPaginaRegistro(string nombre, int cantidadPorPagina,
@@ -232,6 +323,28 @@ namespace BombonesApp2026.Servicios.Servicios
                 throw new KeyNotFoundException($"No se encontró una caja con el ID {productoId}");
             }
             return caja.ToDetailDto();
+        }
+
+        public CajaEditDto? ObtenerCajaConDetallesParaEditar(int cajaId)
+        {
+            // AJUSTE: Validación defensiva del ID antes de operar
+            if (cajaId <= 0)
+                throw new ArgumentException("El ID caja debe ser entero mayor a cero.", nameof(cajaId));
+
+
+            try
+            {
+                Caja? caja = _cajaRepositorio.ObtenerCajaConDetalles(cajaId);
+                if (caja is null) throw new ArgumentException(nameof(cajaId), $"Id {cajaId} no encontrado");
+                CajaEditDto cajaDto = caja.ToEditDto();
+                return cajaDto;
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"Error al intentar obtener la caja con sus detalles {ex.Message}");
+            } 
         }
     }
 }
