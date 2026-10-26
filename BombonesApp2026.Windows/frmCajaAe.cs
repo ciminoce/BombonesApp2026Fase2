@@ -14,7 +14,6 @@ namespace BombonesApp2026.Windows
         private readonly IBombonServicio _bombonServicio;
         private ServicioMensajes _servicioMensajes = new();
         private BindingSource _bindingSource = new BindingSource();
-        //private BindingList<DetalleCajaDto> _listaDetalles = new BindingList<DetalleCajaDto>();
         private CajaEditDto? _cajaDto;
         private EditorCaja _editorCaja = null!;
         public frmCajaAe(IServiceProvider serviceProvider,
@@ -23,7 +22,6 @@ namespace BombonesApp2026.Windows
             InitializeComponent();
             _serviceProvider = serviceProvider;
             _bombonServicio = bombonServicio;
-            //_bindingSource.DataSource = _listaDetalles;
             dgvDatos.DataSource = _bindingSource;
         }
         protected override void OnLoad(EventArgs e)
@@ -135,11 +133,6 @@ namespace BombonesApp2026.Windows
         private void MostrarDatos((IReadOnlyCollection<DetalleCajaDto> Detalles,
             int Cantidad, decimal Precio, bool EsSurtida) resumen)
         {
-            //_listaDetalles.Clear();
-            //foreach (var item in resumen.Detalles)
-            //{
-            //    _listaDetalles.Add(item);
-            //}
             _bindingSource.DataSource = resumen.Detalles;
             txtCantidadBombones.Text = resumen.Cantidad.ToString();
             txtPrecio.Text = resumen.Precio.ToString();
