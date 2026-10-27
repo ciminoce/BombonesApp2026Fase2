@@ -4,7 +4,6 @@ using BombonesApp2026.Servicios.Interfaces;
 using BombonesApp2026.Windows.Classes;
 using BombonesApp2026.Windows.Helpers;
 using Microsoft.Extensions.DependencyInjection;
-using System.ComponentModel;
 
 namespace BombonesApp2026.Windows
 {
@@ -48,7 +47,7 @@ namespace BombonesApp2026.Windows
         {
             txtCantidadBombones.Text = detalles.Sum(d => d.Cantidad).ToString();
             txtSurtida.Text = detalles.Count > 1 ? "Sí" : "No";
-            txtPrecio.Text = (Math.Ceiling(detalles.Sum(d => d.Subtotal) * 1.20m / 100 )* 100).ToString();
+            txtPrecio.Text = (Math.Ceiling(detalles.Sum(d => d.Subtotal) * 1.20m / 100) * 100).ToString();
         }
 
         public CajaEditDto? GetCaja()
@@ -163,7 +162,7 @@ namespace BombonesApp2026.Windows
             DetalleCajaDto? detalleDto = _bindingSource
                 .ObtenerSeleccionado<DetalleCajaDto>(_servicioMensajes);
             if (detalleDto is null) return;
-            using (frmManejarBombonCajaAe frm=_serviceProvider
+            using (frmManejarBombonCajaAe frm = _serviceProvider
                 .GetRequiredService<frmManejarBombonCajaAe>())
             {
                 try
@@ -190,7 +189,7 @@ namespace BombonesApp2026.Windows
                 {
 
                     _servicioMensajes.Error(ex.Message);
-                }                
+                }
             }
         }
     }

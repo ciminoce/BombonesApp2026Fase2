@@ -244,6 +244,18 @@ namespace BombonesApp2026.Windows
                     }
 
                 }
+                catch (ValidarCajaExcepcion ex)
+                {
+                    _servicioMensajes.Errores(ex.Errores);
+                }
+                catch (ArgumentException ex)
+                {
+                    _servicioMensajes.Error(ex.Message);
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    _servicioMensajes.Error(ex.Message);
+                }
                 catch (Exception ex)
                 {
 

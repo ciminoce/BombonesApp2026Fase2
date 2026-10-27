@@ -142,8 +142,6 @@ namespace BombonesApp2026.Servicios.Servicios
 
         public void Editar(CajaEditDto cajaDto)
         {
-            try
-            {
                 var errores = new List<string>();
                 errores.AddRange(ValidarCajaEditDto(cajaDto));
                 errores.AddRange(ValidarDetalles(cajaDto.Detalles));
@@ -156,7 +154,7 @@ namespace BombonesApp2026.Servicios.Servicios
                     .ObtenerCajaConDetalles(cajaDto.ProductoId);
                 if (caja is null)
                 {
-                    throw new ArgumentException(nameof(cajaDto.ProductoId),
+                    throw new KeyNotFoundException(
                         $"La caja ID {cajaDto.ProductoId} no existe");
                 }
                 caja.Nombre = cajaDto.Nombre;
@@ -167,7 +165,10 @@ namespace BombonesApp2026.Servicios.Servicios
                 if (_cajaRepositorio.ExisteCaja(caja))
                     throw new InvalidOperationException($"Ya existe una caja" +
                         $" {caja.Nombre}");
+            try
+            {
                 ActualizarDetalles(caja, cajaDto.Detalles);
+
 
                 _unitOfWork.Guardar();
 
